@@ -1,0 +1,45 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">待收款订单</view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !orders.length}}" class="hint-text">暂无待收款订单</view>
+    <block wx:for="{{orders}}" wx:key="id">
+      <view
+        class="order-item {{selectedOrderId === item.id ? 'order-item--active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="chooseOrder"
+      >
+        <view class="order-top">
+          <view class="order-no">{{item.orderNo}}</view>
+          <view class="order-amount">￥{{item.amount}}</view>
+        </view>
+        <view class="order-meta">{{item.memberName}} · {{item.itemName}}</view>
+      </view>
+    </block>
+  </view>
+
+  <view class="card pay-card">
+    <view class="section-title">收款信息</view>
+
+    <view class="field">
+      <view class="field-label">支付方式</view>
+      <picker mode="selector" range="{{payChannelOptions}}" range-key="label" value="{{payChannelIndex}}" bindchange="onPayChannelChange">
+        <view class="picker-value">{{payChannelOptions[payChannelIndex].label}}</view>
+      </picker>
+    </view>
+
+    <view class="field">
+      <view class="field-label">实收金额（元）</view>
+      <input
+        class="field-input"
+        type="digit"
+        value="{{paidAmount}}"
+        placeholder="请输入实收金额"
+        bindinput="onPaidAmountInput"
+      />
+    </view>
+
+    <button class="primary-btn" loading="{{submitting}}" bindtap="submitPayment">确认收款</button>
+    <button class="secondary-btn" bindtap="goDelivery">下一步：顾客取件</button>
+  </view>
+</view>

@@ -1,0 +1,37 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">待取件订单</view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !readyOrders.length}}" class="hint-text">暂无待取件订单</view>
+    <block wx:for="{{readyOrders}}" wx:key="id">
+      <view class="order-item">
+        <view class="order-top">
+          <view class="order-no">{{item.orderNo}}</view>
+          <view class="order-amount">￥{{item.amount}}</view>
+        </view>
+        <view class="order-meta">{{item.memberName}} · {{item.itemName}}</view>
+        <button
+          class="primary-btn mini"
+          size="mini"
+          loading="{{deliveringId === item.id}}"
+          data-id="{{item.id}}"
+          bindtap="finishDelivery"
+        >
+          确认取件
+        </button>
+      </view>
+    </block>
+    <button class="secondary-btn" bindtap="goPayment">去收款</button>
+  </view>
+
+  <view class="card history-card">
+    <view class="section-title">最近已完成取件</view>
+    <view wx:if="{{!completedOrders.length}}" class="hint-text">暂无数据</view>
+    <block wx:for="{{completedOrders}}" wx:key="id">
+      <view class="history-item">
+        <view>{{item.orderNo}}</view>
+        <view class="history-meta">{{item.memberName}}</view>
+      </view>
+    </block>
+  </view>
+</view>

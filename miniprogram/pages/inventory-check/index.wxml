@@ -1,0 +1,129 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">盘点任务</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="输入SKU或商品名称"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view wx:if="{{currentTab === 'checking'}}" class="card form-card">
+    <view class="section-title">新建盘点</view>
+    <view class="field">
+      <view class="field-label">盘点范围</view>
+      <picker mode="selector" range="{{scopeOptions}}" range-key="label" value="{{scopeIndex}}" bindchange="onScopeChange">
+        <view class="picker-value">{{scopeOptions[scopeIndex].label}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-label">备注</view>
+      <textarea
+        class="field-textarea"
+        maxlength="120"
+        placeholder="可填写盘点说明"
+        value="{{taskNote}}"
+        bindinput="onNoteInput"
+      />
+    </view>
+    <button class="primary-btn" loading="{{creating}}" bindtap="createTask">开始盘点</button>
+  </view>
+
+  <view class="card list-card">
+    <view class="section-title">
+      {{currentTab === 'checking' ? '待盘点商品' : (currentTab === 'difference' ? '差异待处理' : '盘点历史')}}
+    </view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无数据</view>
+
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view>
+            <view class="name">{{item.name}}</view>
+            <view class="meta">{{item.sku}} · 库位 {{item.location}}</view>
+          </view>
+          <view class="status {{item.status === 'difference' ? 'status--warning' : (item.status === 'done' ? 'status--done' : 'status--pending')}}">
+            {{item.statusLabel}}
+          </view>
+        </view>
+        <view class="row">
+          <view class="half">
+            <view class="meta-label">系统库存</view>
+            <view class="meta-value">{{item.systemQty}}</view>
+          </view>
+          <view class="half">
+            <view class="meta-label">实盘数量</view>
+            <input
+              wx:if="{{currentTab === 'checking' && item.status === 'pending'}}"
+              class="count-input"
+              type="number"
+              placeholder="请输入"
+              value="{{item.actualQty}}"
+              data-id="{{item.id}}"
+              bindinput="onActualQtyInput"
+            />
+            <view wx:else class="meta-value">{{item.actualQty !== undefined ? item.actualQty : '--'}}</view>
+          </view>
+        </view>
+        <view wx:if="{{item.difference !== undefined && item.difference !== 0}}" class="difference-row">
+          <view class="meta-label">差异</view>
+          <view class="difference-value {{item.difference > 0 ? 'plus' : 'minus'}}">
+            {{item.difference > 0 ? '+' : ''}}{{item.difference}}
+          </view>
+        </view>
+        <view wx:if="{{item.note}}" class="meta">备注：{{item.note}}</view>
+        <view class="actions">
+          <button
+            wx:if="{{currentTab === 'checking' && item.status === 'pending'}}"
+            size="mini"
+            class="primary-btn"
+            data-id="{{item.id}}"
+            bindtap="submitCount"
+          >
+            确认盘点
+          </button>
+          <button
+            wx:if="{{currentTab === 'difference' && item.status === 'difference'}}"
+            size="mini"
+            class="primary-btn"
+            data-id="{{item.id}}"
+            bindtap="adjustStock"
+          >
+            调整库存
+          </button>
+          <button
+            wx:if="{{currentTab === 'difference'}}"
+            size="mini"
+            class="secondary-btn"
+            data-id="{{item.id}}"
+            bindtap="markNormal"
+          >
+            标记正常
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{currentTab === 'checking' && list.length > 0}}" class="card action-card">
+    <button class="primary-btn" loading="{{submittingAll}}" bindtap="submitAll">提交全部盘点结果</button>
+  </view>
+</view>

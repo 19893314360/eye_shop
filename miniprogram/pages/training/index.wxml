@@ -1,0 +1,113 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">视训中心</view>
+    <view class="tabs">
+      <block wx:for="{{tabs}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card hint-text">加载中...</view>
+
+  <view wx:if="{{!loading && currentTab === 'plan'}}" class="card panel">
+    <view class="section-title">视训方案</view>
+    <block wx:for="{{planList}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view class="name">{{item.customerName}}</view>
+          <view class="status {{item.status === 'done' ? 'status--done' : 'status--pending'}}">
+            {{item.status === 'done' ? '已完成' : '进行中'}}
+          </view>
+        </view>
+        <view class="meta">{{item.planName}}</view>
+        <view class="meta">进度 {{item.progress}} / {{item.total}}</view>
+        <button
+          wx:if="{{role !== 'customer' && item.status !== 'done'}}"
+          class="secondary-btn"
+          size="mini"
+          data-id="{{item.id}}"
+          bindtap="markPlanDone"
+        >
+          标记完成
+        </button>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{!loading && currentTab === 'checkin'}}" class="card panel">
+    <view class="section-title">视训核销</view>
+    <block wx:for="{{checkinList}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view class="name">{{item.customerName}}</view>
+          <view class="meta">{{item.checked}} / {{item.total}}</view>
+        </view>
+        <button
+          wx:if="{{role !== 'customer' && item.checked < item.total}}"
+          class="primary-btn mini"
+          size="mini"
+          data-id="{{item.id}}"
+          bindtap="doCheckin"
+        >
+          核销一次
+        </button>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{!loading && currentTab === 'device'}}" class="card panel">
+    <view class="section-title">设备租借</view>
+    <block wx:for="{{deviceList}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view class="name">{{item.deviceName}}</view>
+          <view class="status {{item.status === 'returned' ? 'status--done' : 'status--pending'}}">
+            {{item.status === 'returned' ? '已归还' : '借出中'}}
+          </view>
+        </view>
+        <view class="meta">借用人 {{item.borrower}}</view>
+        <view class="meta">应还日期 {{item.dueDate}}</view>
+        <button
+          wx:if="{{item.status !== 'returned'}}"
+          class="secondary-btn"
+          size="mini"
+          data-id="{{item.id}}"
+          bindtap="markDeviceReturned"
+        >
+          标记归还
+        </button>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{!loading && currentTab === 'reminder'}}" class="card panel">
+    <view class="section-title">视训提醒</view>
+    <view class="switch-row">
+      <view>提醒开关</view>
+      <switch checked="{{reminder.enabled}}" bindchange="toggleReminder" color="#f57c00"></switch>
+    </view>
+    <view class="field">
+      <view class="field-label">提醒时间</view>
+      <picker mode="time" value="{{reminder.time}}" bindchange="onReminderTimeChange">
+        <view class="picker-value">{{reminder.time}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-label">提醒内容</view>
+      <textarea
+        class="field-textarea"
+        maxlength="120"
+        value="{{reminder.content}}"
+        bindinput="onReminderInput"
+      />
+    </view>
+    <button class="primary-btn" loading="{{savingReminder}}" bindtap="saveReminderConfig">保存提醒设置</button>
+  </view>
+</view>

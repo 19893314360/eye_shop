@@ -1,0 +1,7 @@
+<view class="bottom-nav">
+  <block wx:for="{{tabList}}" wx:key="key">
+    <view class="tab-item {{current === item.key ? 'tab-item--active' : ''}}" data-key="{{item.key}}" bindtap="onSwitch">
+      <text>{{item.label}}</text>
+    </view>
+  </block>
+</view>

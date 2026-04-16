@@ -1,0 +1,79 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">售后追踪</view>
+
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="输入单号、会员名、商品名"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view class="section-title">
+      {{currentTab === 'followup' ? '待回访列表' : (currentTab === 'recheck' ? '待复查列表' : '已处理记录')}}
+    </view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无数据</view>
+
+    <block wx:for="{{list}}" wx:key="orderId">
+      <view class="item">
+        <view class="item-top">
+          <view class="order-no">{{item.orderNo}}</view>
+          <view class="amount">￥{{item.amount}}</view>
+        </view>
+        <view class="main">{{item.memberName}} · {{item.itemName}}</view>
+        <view class="meta">
+          <view>开单时间 {{item.createdText}}</view>
+          <view>处理时间 {{item.updatedText}}</view>
+        </view>
+        <view class="actions">
+          <button
+            wx:if="{{item.canFollowup}}"
+            size="mini"
+            class="primary-btn"
+            data-id="{{item.orderId}}"
+            bindtap="markFollowupDone"
+          >
+            登记回访
+          </button>
+          <button
+            wx:if="{{item.canRecheck}}"
+            size="mini"
+            class="primary-btn"
+            data-id="{{item.orderId}}"
+            bindtap="markRecheckDone"
+          >
+            处理复查
+          </button>
+          <button
+            size="mini"
+            class="secondary-btn"
+            data-id="{{item.orderId}}"
+            bindtap="goOrderDetail"
+          >
+            订单详情
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

@@ -1,0 +1,92 @@
+.loading-card {
+  margin-bottom: 14rpx;
+  color: #666666;
+  font-size: 24rpx;
+}
+
+.summary-card {
+  margin-bottom: 14rpx;
+}
+
+.summary-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.summary-grid {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+}
+
+.summary-item {
+  background: #f8f9fb;
+  border-radius: 12rpx;
+  padding: 18rpx;
+}
+
+.summary-label {
+  color: #666666;
+  font-size: 24rpx;
+}
+
+.summary-value {
+  margin-top: 10rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #f57c00;
+}
+
+.rank-card {
+  margin-bottom: 14rpx;
+}
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.rank-item:last-child {
+  border-bottom: none;
+}
+
+.rank-left {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.rank-index {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: #fff3e8;
+  color: #f57c00;
+  font-size: 22rpx;
+  text-align: center;
+  line-height: 36rpx;
+}
+
+.rank-amount {
+  color: #ff4d4f;
+  font-weight: 700;
+}
+
+.empty-card {
+  margin-top: 20rpx;
+}
+
+.empty-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.empty-text {
+  margin-top: 12rpx;
+  color: #666666;
+  font-size: 24rpx;
+}

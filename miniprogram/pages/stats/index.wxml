@@ -1,0 +1,37 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card loading-card">正在同步登录态...</view>
+
+  <block wx:if="{{canView}}">
+    <view class="card summary-card">
+      <view class="summary-title">{{roleLabel}}统计概览</view>
+      <view class="summary-grid">
+        <block wx:for="{{summary}}" wx:key="label">
+          <view class="summary-item">
+            <view class="summary-label">{{item.label}}</view>
+            <view class="summary-value">{{item.value}}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="card rank-card">
+      <view class="summary-title">{{role === 'manager' ? '门店排行' : '销售员排行榜'}}</view>
+      <block wx:for="{{rank}}" wx:key="name">
+        <view class="rank-item">
+          <view class="rank-left">
+            <view class="rank-index">{{index + 1}}</view>
+            <view>{{item.name}}</view>
+          </view>
+          <view class="rank-amount">{{item.amount}}</view>
+        </view>
+      </block>
+    </view>
+  </block>
+
+  <view wx:else class="card empty-card">
+    <view class="empty-title">客户端不开放经营统计</view>
+    <view class="empty-text">你可以在“首页”和“我的”查看订单、档案、预约和消息。</view>
+  </view>
+
+  <bottom-nav current="stats"></bottom-nav>
+</view>

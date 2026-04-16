@@ -1,0 +1,114 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">待入库调拨单</view>
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view wx:if="{{currentTab === 'scan'}}" class="card scan-card">
+    <view class="section-title">扫码入库</view>
+    <view class="scan-area">
+      <view class="scan-icon">📷</view>
+      <view class="scan-text">点击扫码调拨单二维码</view>
+      <button class="primary-btn" bindtap="scanCode">扫一扫</button>
+    </view>
+    <view wx:if="{{scanResult}}" class="scan-result">
+      <view class="result-title">扫码结果</view>
+      <view class="result-content">{{scanResult}}</view>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view class="section-title">
+      {{currentTab === 'pending' ? '待确认入库' : (currentTab === 'completed' ? '已入库记录' : '扫码结果')}}
+    </view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无数据</view>
+
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="transfer-card">
+        <view class="transfer-header">
+          <view class="transfer-no">{{item.transferNo}}</view>
+          <view class="status {{item.status === 'pending' ? 'status--pending' : (item.status === 'shipped' ? 'status--shipped' : 'status--done')}}">
+            {{item.statusLabel}}
+          </view>
+        </view>
+
+        <view class="transfer-info">
+          <view class="info-row">
+            <view class="info-label">来源门店</view>
+            <view class="info-value">{{item.sourceStore}}</view>
+          </view>
+          <view class="info-row">
+            <view class="info-label">出库时间</view>
+            <view class="info-value">{{item.outTime}}</view>
+          </view>
+          <view class="info-row">
+            <view class="info-label">操作人</view>
+            <view class="info-value">{{item.operator}}</view>
+          </view>
+          <view wx:if="{{item.note}}" class="info-row">
+            <view class="info-label">备注</view>
+            <view class="info-value">{{item.note}}</view>
+          </view>
+        </view>
+
+        <view class="transfer-items">
+          <view class="items-title">商品明细 ({{item.items.length}})</view>
+          <block wx:for="{{item.items}}" wx:for-item="goods" wx:key="id">
+            <view class="goods-item">
+              <view class="goods-info">
+                <view class="goods-name">{{goods.name}}</view>
+                <view class="goods-meta">{{goods.sku}} · 库位 {{goods.location}}</view>
+              </view>
+              <view class="goods-qty">×{{goods.qty}}</view>
+            </view>
+          </block>
+        </view>
+
+        <view class="transfer-actions">
+          <button
+            wx:if="{{item.status === 'pending' && currentTab === 'pending'}}"
+            size="mini"
+            class="primary-btn"
+            data-id="{{item.id}}"
+            bindtap="confirmReceipt"
+          >
+            确认入库
+          </button>
+          <button
+            wx:if="{{item.status === 'pending' && currentTab === 'pending'}}"
+            size="mini"
+            class="secondary-btn"
+            data-id="{{item.id}}"
+            bindtap="viewDetail"
+          >
+            查看详情
+          </button>
+          <button
+            wx:if="{{currentTab === 'completed'}}"
+            size="mini"
+            class="secondary-btn"
+            data-id="{{item.id}}"
+            bindtap="viewDetail"
+          >
+            查看详情
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{currentTab === 'pending' && list.length > 0}}" class="card action-card">
+    <button class="primary-btn" bindtap="batchReceipt">批量确认入库</button>
+  </view>
+</view>

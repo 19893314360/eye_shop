@@ -1,0 +1,69 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card hint-text">加载中...</view>
+  <block wx:if="{{detail}}">
+    <view class="card">
+      <view class="section-title">订单信息</view>
+      <view class="row">
+        <view class="label">订单号</view>
+        <view class="value">{{detail.orderNo}}</view>
+      </view>
+      <view class="row">
+        <view class="label">状态</view>
+        <view class="value value--status">{{detail.statusLabel}}</view>
+      </view>
+      <view class="row">
+        <view class="label">开单类型</view>
+        <view class="value">{{detail.orderTypeLabel}}</view>
+      </view>
+      <view class="row">
+        <view class="label">会员</view>
+        <view class="value">{{detail.memberName}}</view>
+      </view>
+      <view class="row">
+        <view class="label">商品</view>
+        <view class="value">{{detail.itemName}}</view>
+      </view>
+      <view class="row">
+        <view class="label">数量</view>
+        <view class="value">{{detail.quantity}}</view>
+      </view>
+      <view class="row">
+        <view class="label">单价</view>
+        <view class="value">￥{{detail.unitPrice}}</view>
+      </view>
+      <view class="row">
+        <view class="label">应收</view>
+        <view class="value value--amount">￥{{detail.amount}}</view>
+      </view>
+      <view class="row">
+        <view class="label">支付方式</view>
+        <view class="value">{{detail.payChannelLabel}}</view>
+      </view>
+    </view>
+
+    <view class="card timeline-card">
+      <view class="section-title">流程时间线</view>
+      <block wx:for="{{timeline}}" wx:key="label">
+        <view class="timeline-item">
+          <view class="dot {{item.done ? 'dot--done' : ''}}"></view>
+          <view class="timeline-main">
+            <view class="timeline-label">{{item.label}}</view>
+            <view class="timeline-time">{{item.time}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view class="card action-card">
+      <view class="section-title">快捷操作</view>
+      <block wx:if="{{role !== 'customer' && detail.status === 'awaiting_payment'}}">
+        <button class="primary-btn" bindtap="goPayment">去收款</button>
+      </block>
+      <block wx:if="{{role !== 'customer' && detail.status === 'ready_delivery'}}">
+        <button class="primary-btn" bindtap="goDelivery">去取件</button>
+      </block>
+      <button wx:if="{{role !== 'customer'}}" class="secondary-btn" bindtap="goAfterSale">售后入口</button>
+      <button class="secondary-btn" bindtap="goOrderList">返回配镜记录</button>
+    </view>
+  </block>
+</view>

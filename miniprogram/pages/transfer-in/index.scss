@@ -1,0 +1,264 @@
+.page {
+  padding: 24rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 24rpx;
+}
+
+.tabs {
+  display: flex;
+  gap: 16rpx;
+  border-bottom: 2rpx solid #eeeeee;
+  padding-bottom: 16rpx;
+}
+
+.tab-item {
+  padding: 12rpx 24rpx;
+  font-size: 28rpx;
+  color: #666666;
+  border-radius: 8rpx;
+  transition: all 0.3s;
+}
+
+.tab-item--active {
+  background: #fff3e8;
+  color: #f57c00;
+  font-weight: 500;
+}
+
+.scan-card {
+  .scan-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48rpx 0;
+    background: #f5f6f8;
+    border-radius: 16rpx;
+    border: 4rpx dashed #dddddd;
+  }
+
+  .scan-icon {
+    font-size: 80rpx;
+    margin-bottom: 24rpx;
+  }
+
+  .scan-text {
+    font-size: 28rpx;
+    color: #666666;
+    margin-bottom: 32rpx;
+  }
+
+  .primary-btn {
+    width: 240rpx;
+    height: 80rpx;
+    background: #f57c00;
+    color: #ffffff;
+    font-size: 30rpx;
+    font-weight: 500;
+    border-radius: 12rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scan-result {
+    margin-top: 24rpx;
+    padding: 24rpx;
+    background: #f6ffed;
+    border-radius: 12rpx;
+    border: 2rpx solid #b7eb8f;
+
+    .result-title {
+      font-size: 28rpx;
+      font-weight: 500;
+      color: #52c41a;
+      margin-bottom: 12rpx;
+    }
+
+    .result-content {
+      font-size: 26rpx;
+      color: #666666;
+      word-break: break-all;
+    }
+  }
+}
+
+.list-card {
+  .hint-text {
+    text-align: center;
+    color: #999999;
+    font-size: 28rpx;
+    padding: 48rpx 0;
+  }
+}
+
+.transfer-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.transfer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  margin-bottom: 20rpx;
+}
+
+.transfer-no {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.status {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.status--pending {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.status--shipped {
+  background: #fffbe6;
+  color: #faad14;
+}
+
+.status--done {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.transfer-info {
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid #f0f0f0;
+  margin-bottom: 20rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.transfer-items {
+  margin-bottom: 20rpx;
+}
+
+.items-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #666666;
+  margin-bottom: 16rpx;
+}
+
+.goods-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid #f5f6f8;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.goods-info {
+  flex: 1;
+}
+
+.goods-name {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.goods-meta {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.goods-qty {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #f57c00;
+}
+
+.transfer-actions {
+  display: flex;
+  gap: 16rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #f0f0f0;
+
+  .primary-btn {
+    flex: 1;
+    height: 72rpx;
+    background: #f57c00;
+    color: #ffffff;
+    font-size: 28rpx;
+    border-radius: 8rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .secondary-btn {
+    flex: 1;
+    height: 72rpx;
+    background: #f5f6f8;
+    color: #666666;
+    font-size: 28rpx;
+    border-radius: 8rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.action-card {
+  .primary-btn {
+    width: 100%;
+    height: 88rpx;
+    background: #f57c00;
+    color: #ffffff;
+    font-size: 32rpx;
+    font-weight: 500;
+    border-radius: 12rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

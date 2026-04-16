@@ -1,0 +1,69 @@
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.avatar {
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 50%;
+  background: #f1f1f1;
+  color: #333333;
+  font-size: 36rpx;
+  font-weight: 700;
+  line-height: 92rpx;
+  text-align: center;
+}
+
+.profile-main {
+  flex: 1;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.desc {
+  margin-top: 8rpx;
+  color: #666666;
+  font-size: 24rpx;
+}
+
+.desc-tip {
+  color: #a0a0a0;
+}
+
+.role-btn {
+  color: #f57c00 !important;
+  background: #fff3e8 !important;
+  border-radius: 999rpx !important;
+}
+
+.menu {
+  margin-top: 14rpx;
+  padding-top: 6rpx;
+  padding-bottom: 6rpx;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 88rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-name {
+  font-size: 28rpx;
+}
+
+.menu-value {
+  color: #666666;
+  font-size: 24rpx;
+}

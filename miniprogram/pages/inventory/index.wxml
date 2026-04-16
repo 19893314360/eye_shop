@@ -1,0 +1,60 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">库存查询</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="输入SKU、名称、库位"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+      <view class="trace-toggle" bindtap="toggleTrace">{{showTrace ? '隐藏追踪' : '库存追踪'}}</view>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view class="section-title">库存列表</view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无库存数据</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view>
+            <view class="name">{{item.name}}</view>
+            <view class="meta">{{item.sku}} · 库位 {{item.location}}</view>
+          </view>
+          <view class="status status--{{item.status}}">{{item.statusLabel}}</view>
+        </view>
+        <view class="meta">库存 {{item.qty}} · 下限 {{item.safeMin}} · 上限 {{item.safeMax}}</view>
+        <button class="secondary-btn" size="mini" data-id="{{item.id}}" bindtap="adjustStock">盘点调整</button>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{showTrace}}" class="card trace-card">
+    <view class="section-title">库存追踪日志</view>
+    <block wx:for="{{traceList}}" wx:key="id">
+      <view class="trace-item">
+        <view class="trace-top">
+          <view>{{item.action}}（{{item.sku}}）</view>
+          <view class="trace-qty">{{item.qtyText}}</view>
+        </view>
+        <view class="trace-meta">{{item.operator}} · {{item.timeText}}</view>
+      </view>
+    </block>
+  </view>
+</view>

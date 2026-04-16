@@ -1,0 +1,38 @@
+:root {
+  --brand: #f57c00;
+  --brand-soft: #fff3e8;
+  --text-primary: #202020;
+  --text-secondary: #666666;
+  --line: #eeeeee;
+  --bg: #f5f6f8;
+  --card: #ffffff;
+}
+
+page {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 28rpx;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx calc(160rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 18rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.hint-text {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}

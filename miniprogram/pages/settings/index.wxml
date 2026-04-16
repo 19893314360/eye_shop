@@ -1,0 +1,129 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">配置分组</view>
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card hint-text">加载中...</view>
+
+  <view wx:if="{{!loading && currentTab === 'system'}}" class="card panel">
+    <view class="section-title">系统设置</view>
+    <view class="switch-row">
+      <view>取件提醒</view>
+      <switch checked="{{settings.system.notifyTakeaway}}" data-path="settings.system.notifyTakeaway" bindchange="toggleBoolean" color="#f57c00"></switch>
+    </view>
+    <view class="switch-row">
+      <view>复查提醒</view>
+      <switch checked="{{settings.system.notifyRecheck}}" data-path="settings.system.notifyRecheck" bindchange="toggleBoolean" color="#f57c00"></switch>
+    </view>
+    <view class="switch-row">
+      <view>视训提醒</view>
+      <switch checked="{{settings.system.notifyTraining}}" data-path="settings.system.notifyTraining" bindchange="toggleBoolean" color="#f57c00"></switch>
+    </view>
+    <view class="section-title section-title--sub">联调配置（仅管理者可改）</view>
+    <view class="switch-row">
+      <view>使用 Mock 数据</view>
+      <switch checked="{{runtimeConfig.useMockApi}}" bindchange="onRuntimeToggle" color="#f57c00"></switch>
+    </view>
+    <view class="field">
+      <view class="field-label">API Base URL</view>
+      <input
+        class="field-input"
+        placeholder="示例：https://api.xuji.com"
+        value="{{runtimeConfig.apiBaseUrl}}"
+        data-field="apiBaseUrl"
+        bindinput="onRuntimeInput"
+      />
+    </view>
+    <view class="field">
+      <view class="field-label">请求字段风格</view>
+      <picker
+        mode="selector"
+        range="{{requestKeyStyleOptions}}"
+        range-key="label"
+        value="{{requestKeyStyleIndex}}"
+        bindchange="onRequestKeyStyleChange"
+      >
+        <view class="field-input">{{requestKeyStyleOptions[requestKeyStyleIndex].label}}</view>
+      </picker>
+    </view>
+    <button class="secondary-btn" loading="{{checkingIntegration}}" bindtap="runIntegrationCheck">联调自检</button>
+    <view wx:if="{{integrationResult}}" class="hint-text">结果：{{integrationResult}}</view>
+    <button class="secondary-btn" loading="{{checkingMainline}}" bindtap="runMainlineCheck">主链路联调（写入）</button>
+    <view wx:if="{{mainlineResult}}" class="hint-text">主链路：{{mainlineResult}}</view>
+    <view wx:if="{{mainlineLogs.length}}" class="log-box">
+      <view class="log-title">联调日志</view>
+      <block wx:for="{{mainlineLogs}}" wx:key="index">
+        <view class="log-line">{{index + 1}}. {{item}}</view>
+      </block>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && currentTab === 'notice'}}" class="card panel">
+    <view class="section-title">公告管理</view>
+    <view class="hint-text">最近更新时间：{{noticeUpdatedText}}</view>
+    <textarea class="field-textarea" maxlength="300" value="{{settings.notice.content}}" bindinput="onNoticeInput" />
+  </view>
+
+  <view wx:if="{{!loading && currentTab === 'print'}}" class="card panel">
+    <view class="section-title">打印模板</view>
+    <view class="switch-row">
+      <view>小票模板</view>
+      <switch checked="{{settings.print.printTicket}}" data-path="settings.print.printTicket" bindchange="toggleBoolean" color="#f57c00"></switch>
+    </view>
+    <view class="switch-row">
+      <view>配镜单模板</view>
+      <switch checked="{{settings.print.printOrder}}" data-path="settings.print.printOrder" bindchange="toggleBoolean" color="#f57c00"></switch>
+    </view>
+    <view class="switch-row">
+      <view>取件单模板</view>
+      <switch checked="{{settings.print.printDelivery}}" data-path="settings.print.printDelivery" bindchange="toggleBoolean" color="#f57c00"></switch>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && currentTab === 'rate'}}" class="card panel">
+    <view class="section-title">费率配置</view>
+    <view class="hint-text">{{canManage ? '可编辑' : '销售员只读展示'}}</view>
+    <view class="field">
+      <view class="field-label">商户号</view>
+      <input class="field-input" value="{{settings.rate.merchantNo}}" data-field="merchantNo" bindinput="onProtectedInput" />
+    </view>
+    <view class="field">
+      <view class="field-label">费率</view>
+      <input class="field-input" value="{{settings.rate.rate}}" data-field="rate" bindinput="onProtectedInput" />
+    </view>
+    <view class="switch-row">
+      <view>自动结算</view>
+      <switch checked="{{settings.rate.autoSettle}}" data-path="settings.rate.autoSettle" bindchange="onProtectedToggle" color="#f57c00"></switch>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && currentTab === 'permission'}}" class="card panel">
+    <view class="section-title">权限管理</view>
+    <view class="hint-text">{{canManage ? '可编辑' : '销售员只读展示'}}</view>
+    <view class="switch-row">
+      <view>销售员可录入采购</view>
+      <switch checked="{{settings.permission.salesCanPurchase}}" data-path="settings.permission.salesCanPurchase" bindchange="onProtectedToggle" color="#f57c00"></switch>
+    </view>
+    <view class="switch-row">
+      <view>销售员可查看费率</view>
+      <switch checked="{{settings.permission.salesCanRateView}}" data-path="settings.permission.salesCanRateView" bindchange="onProtectedToggle" color="#f57c00"></switch>
+    </view>
+    <view class="switch-row">
+      <view>客户端可发起售后</view>
+      <switch checked="{{settings.permission.customerCanAfterSale}}" data-path="settings.permission.customerCanAfterSale" bindchange="onProtectedToggle" color="#f57c00"></switch>
+    </view>
+  </view>
+
+  <button wx:if="{{!loading}}" class="primary-btn" loading="{{saving}}" bindtap="save">保存设置</button>
+</view>

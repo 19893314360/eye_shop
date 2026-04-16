@@ -1,0 +1,51 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">验光对象</view>
+    <block wx:if="{{memberList.length}}">
+      <picker mode="selector" range="{{memberList}}" range-key="name" value="{{memberIndex}}" bindchange="onMemberChange">
+        <view class="picker-value">{{memberList[memberIndex].name}}（{{memberList[memberIndex].mobile}}）</view>
+      </picker>
+    </block>
+    <view wx:else class="hint-text">暂无会员，请先新增会员</view>
+
+    <view class="field">
+      <view class="field-label">验光日期</view>
+      <picker mode="date" value="{{form.examDate}}" bindchange="onDateChange">
+        <view class="picker-value">{{form.examDate}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card form-card">
+    <view class="section-title">验光参数</view>
+    <view class="eye-title">右眼</view>
+    <view class="row">
+      <input class="field-input" placeholder="Sph" value="{{form.rightEyeSph}}" data-field="rightEyeSph" bindinput="onInput" />
+      <input class="field-input" placeholder="Cyl" value="{{form.rightEyeCyl}}" data-field="rightEyeCyl" bindinput="onInput" />
+      <input class="field-input" placeholder="Axis" value="{{form.rightEyeAxis}}" data-field="rightEyeAxis" bindinput="onInput" />
+    </view>
+
+    <view class="eye-title">左眼</view>
+    <view class="row">
+      <input class="field-input" placeholder="Sph" value="{{form.leftEyeSph}}" data-field="leftEyeSph" bindinput="onInput" />
+      <input class="field-input" placeholder="Cyl" value="{{form.leftEyeCyl}}" data-field="leftEyeCyl" bindinput="onInput" />
+      <input class="field-input" placeholder="Axis" value="{{form.leftEyeAxis}}" data-field="leftEyeAxis" bindinput="onInput" />
+    </view>
+
+    <view class="field">
+      <view class="field-label">PD *</view>
+      <input class="field-input full" placeholder="请输入瞳距" value="{{form.pd}}" data-field="pd" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-label">验光师 *</view>
+      <input class="field-input full" placeholder="请输入验光师姓名" value="{{form.doctor}}" data-field="doctor" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-label">建议</view>
+      <textarea class="field-textarea" maxlength="160" value="{{form.suggestion}}" data-field="suggestion" bindinput="onInput" />
+    </view>
+
+    <button class="primary-btn" loading="{{submitting}}" bindtap="submit">保存验光记录</button>
+    <button class="secondary-btn" bindtap="goVisionProfile">查看视力档案</button>
+  </view>
+</view>

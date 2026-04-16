@@ -1,0 +1,73 @@
+.role-bar {
+  margin-bottom: 14rpx;
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
+}
+
+.search-title {
+  width: 140rpx;
+  font-size: 28rpx;
+}
+
+.search-placeholder {
+  flex: 1;
+  color: #9a9a9a;
+  font-size: 24rpx;
+}
+
+.section {
+  margin-top: 12rpx;
+}
+
+.module-grid {
+  margin-top: 20rpx;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18rpx 14rpx;
+}
+
+.module-item {
+  position: relative;
+  text-align: center;
+}
+
+.module-icon {
+  width: 72rpx;
+  height: 72rpx;
+  margin: 0 auto;
+  border-radius: 18rpx;
+  background: #e7f8ff;
+  color: #1588b5;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 72rpx;
+}
+
+.module-text {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: #444444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.module-badge {
+  position: absolute;
+  top: -8rpx;
+  right: 8rpx;
+  min-width: 26rpx;
+  padding: 0 8rpx;
+  border-radius: 999rpx;
+  background: #ff4d4f;
+  color: #ffffff;
+  font-size: 18rpx;
+  line-height: 26rpx;
+  text-align: center;
+}

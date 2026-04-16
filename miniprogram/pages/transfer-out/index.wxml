@@ -1,0 +1,147 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">调拨信息</view>
+
+    <view class="field">
+      <view class="field-label">目标仓库 *</view>
+      <picker mode="selector" range="{{warehouseOptions}}" range-key="label" value="{{warehouseIndex}}" bindchange="onWarehouseChange">
+        <view class="picker-value">{{warehouseOptions[warehouseIndex].label}}</view>
+      </picker>
+    </view>
+
+    <view class="field">
+      <view class="field-label">调拨单号</view>
+      <input class="field-input" disabled value="{{transferNo}}" />
+      <view class="hint-text">系统自动生成</view>
+    </view>
+
+    <view class="field">
+      <view class="field-label">备注</view>
+      <textarea
+        class="field-textarea"
+        maxlength="120"
+        placeholder="可填写调拨说明"
+        value="{{note}}"
+        bindinput="onNoteInput"
+      />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">选择商品</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="输入SKU或商品名称搜索"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="searchStock"
+      />
+      <button class="search-btn" size="mini" bindtap="searchStock">搜索</button>
+    </view>
+
+    <view wx:if="{{stockList.length > 0}}" class="stock-list">
+      <block wx:for="{{stockList}}" wx:key="id">
+        <view class="stock-item {{selectedStock && selectedStock.id === item.id ? 'selected' : ''}}" data-id="{{item.id}}" bindtap="selectStock">
+          <view class="stock-info">
+            <view class="stock-name">{{item.name}}</view>
+            <view class="stock-meta">{{item.sku}} · 库位 {{item.location}} · 库存 {{item.qty}}</view>
+          </view>
+          <view wx:if="{{selectedStock && selectedStock.id === item.id}}" class="selected-mark">✓</view>
+        </view>
+      </block>
+    </view>
+    <view wx:else class="hint-text">{{searchKeyword ? '未找到匹配商品' : '请输入关键词搜索库存'}}</view>
+  </view>
+
+  <view wx:if="{{selectedStock}}" class="card form-card">
+    <view class="section-title">调拨数量</view>
+    <view class="field">
+      <view class="field-label">当前库存</view>
+      <input class="field-input" disabled value="{{selectedStock.qty}}" />
+    </view>
+    <view class="field">
+      <view class="field-label">调拨数量 *</view>
+      <input
+        class="field-input"
+        type="number"
+        placeholder="请输入调拨数量"
+        value="{{transferQty}}"
+        bindinput="onQtyInput"
+      />
+      <view class="hint-text">不能超过当前库存</view>
+    </view>
+    <button class="secondary-btn" bindtap="addToList">添加到调拨清单</button>
+  </view>
+
+  <view wx:if="{{transferList.length > 0}}" class="card list-card">
+    <view class="section-title">调拨清单 ({{transferList.length}})</view>
+    <block wx:for="{{transferList}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view>
+            <view class="name">{{item.name}}</view>
+            <view class="meta">{{item.sku}}</view>
+          </view>
+          <view class="qty">×{{item.qty}}</view>
+        </view>
+        <view class="meta">来源库位 {{item.location}} → 目标仓库 {{item.targetWarehouse}}</view>
+        <button class="remove-btn" size="mini" data-id="{{item.id}}" bindtap="removeFromList">删除</button>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{transferList.length > 0}}" class="card action-card">
+    <view class="summary-row">
+      <view class="summary-label">共 {{transferList.length}} 种商品</view>
+      <view class="summary-value">{{totalQty}} 件</view>
+    </view>
+    <button class="primary-btn" loading="{{submitting}}" bindtap="submitTransfer">提交调拨出库</button>
+  </view>
+
+  <view class="card">
+    <button class="secondary-btn" bindtap="toggleHistory">{{showingHistory ? '隐藏历史记录' : '查看调拨历史'}}</button>
+  </view>
+
+  <view wx:if="{{showingHistory}}" class="card history-card">
+    <view class="section-title">调拨出库记录</view>
+    <view class="tabs">
+      <block wx:for="{{historyTabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{historyTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onHistoryTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+
+    <view wx:if="{{!historyList.length}}" class="hint-text">暂无记录</view>
+
+    <block wx:for="{{historyList}}" wx:key="id">
+      <view class="history-item" data-id="{{item.id}}" bindtap="viewHistoryDetail">
+        <view class="history-header">
+          <view class="history-no">{{item.transferNo}}</view>
+          <view class="status status--{{item.status}}">
+            {{item.status === 'pending' ? '待入库' : (item.status === 'shipped' ? '运输中' : '已入库')}}
+          </view>
+        </view>
+        <view class="history-info">
+          <view class="info-row">
+            <view class="info-label">目标仓库</view>
+            <view class="info-value">{{item.targetWarehouse}}</view>
+          </view>
+          <view class="info-row">
+            <view class="info-label">操作人</view>
+            <view class="info-value">{{item.operator}}</view>
+          </view>
+          <view class="info-row">
+            <view class="info-label">商品数</view>
+            <view class="info-value">{{item.items.length}} 种 / {{item.totalItems}} 件</view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

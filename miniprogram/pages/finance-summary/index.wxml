@@ -1,0 +1,63 @@
+<view class="page">
+  <view class="card summary-card">
+    <view class="section-title">财务概览</view>
+    <view class="summary-grid">
+      <view class="summary-item">
+        <view class="label">销售总额</view>
+        <view class="value">￥{{summary.totalAmount}}</view>
+      </view>
+      <view class="summary-item">
+        <view class="label">已收金额</view>
+        <view class="value">￥{{summary.receivedAmount}}</view>
+      </view>
+      <view class="summary-item">
+        <view class="label">待收金额</view>
+        <view class="value">￥{{summary.receivableAmount}}</view>
+      </view>
+      <view class="summary-item">
+        <view class="label">待收单数</view>
+        <view class="value">{{summary.awaitingPaymentCount}}</view>
+      </view>
+    </view>
+    <button class="secondary-btn" bindtap="goStats">查看统计页</button>
+  </view>
+
+  <view class="card list-card">
+    <view class="section-title">订单收款明细</view>
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无订单</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view class="order-no">{{item.orderNo}}</view>
+          <view class="status status--{{item.statusTone}}">{{item.statusLabel}}</view>
+        </view>
+        <view class="meta">{{item.memberName}} · {{item.itemName}}</view>
+        <view class="meta">{{item.createdText}} · ￥{{item.amount}}</view>
+        <view class="actions">
+          <button size="mini" class="action-btn" data-id="{{item.id}}" bindtap="goOrderDetail">详情</button>
+          <button
+            wx:if="{{item.status === 'awaiting_payment'}}"
+            size="mini"
+            class="action-btn"
+            data-id="{{item.id}}"
+            bindtap="goPayment"
+          >
+            去收款
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

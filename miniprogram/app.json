@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "pages/entry/index",
+    "pages/home/index",
+    "pages/workbench/index",
+    "pages/stats/index",
+    "pages/mine/index",
+    "pages/member-create/index",
+    "pages/order-create/index",
+    "pages/order-list/index",
+    "pages/order-detail/index",
+    "pages/after-sale/index",
+    "pages/appointment/index",
+    "pages/training/index",
+    "pages/inventory/index",
+    "pages/member-query/index",
+    "pages/vision-profile/index",
+    "pages/finance-summary/index",
+    "pages/optometry-create/index",
+    "pages/purchase/index",
+    "pages/settings/index",
+    "pages/payment/index",
+    "pages/delivery/index",
+    "pages/inventory-check/index",
+    "pages/transfer-out/index",
+    "pages/transfer-in/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "眼镜门店助手",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f5f6f8",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

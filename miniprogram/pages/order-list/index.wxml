@@ -1,0 +1,70 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">筛选</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="输入单号、会员名、商品名"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        confirm-type="search"
+        bindconfirm="onSearch"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view class="section-title">配镜记录</view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !orders.length}}" class="hint-text">暂无订单</view>
+
+    <block wx:for="{{orders}}" wx:key="id">
+      <view class="order-item" data-id="{{item.id}}" bindtap="goDetail">
+        <view class="order-header">
+          <view class="order-no">{{item.orderNo}}</view>
+          <view class="order-status order-status--{{item.statusTone}}">{{item.statusLabel}}</view>
+        </view>
+        <view class="order-main">{{item.memberName}} · {{item.itemName}}</view>
+        <view class="order-meta">
+          <view>数量 {{item.quantity}}</view>
+          <view>应收 ￥{{item.amount}}</view>
+          <view>{{item.createdText}}</view>
+        </view>
+        <button
+          wx:if="{{role !== 'customer'}}"
+          class="action-btn"
+          size="mini"
+          data-id="{{item.id}}"
+          data-status="{{item.status}}"
+          catchtap="onActionTap"
+        >
+          {{item.status === 'awaiting_payment' ? '去收款' : (item.status === 'ready_delivery' ? '去取件' : '查看详情')}}
+        </button>
+        <button
+          wx:else
+          class="action-btn"
+          size="mini"
+          data-id="{{item.id}}"
+          catchtap="goDetail"
+        >
+          查看详情
+        </button>
+      </view>
+    </block>
+  </view>
+
+  <button wx:if="{{role !== 'customer'}}" class="floating-btn" bindtap="goCreateOrder">+ 新增开单</button>
+</view>

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "功能",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/bottom-nav"
+  }
+}
