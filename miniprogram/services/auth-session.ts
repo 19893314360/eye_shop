@@ -27,6 +27,7 @@ function isSessionModeMatched(token: string, useMockApi: boolean): boolean {
 
 function syncGlobalData(state: AppState) {
   const app = getApp<IAppOption>()
+  if (!app) return
   app.globalData.role = state.role
   app.globalData.token = state.token
   app.globalData.userId = state.userId
@@ -76,6 +77,7 @@ async function runBootstrap(forceLogin: boolean): Promise<AppState> {
 
     const profile = await fetchCurrentProfile()
     setUserContext(profile)
+    wx.setStorageSync('yanjing-last-login-time', Date.now())
     setReady(true)
     const readyState = getAppState()
     syncGlobalData(readyState)
@@ -99,10 +101,19 @@ function enqueueBootstrap(forceLogin: boolean): Promise<AppState> {
       () => enqueueBootstrap(true)
     )
   }
-  bootTask = runBootstrap(forceLogin).finally(() => {
-    bootTask = null
-  })
-  return bootTask
+  const task = runBootstrap(forceLogin)
+  task.then(
+    function (result) {
+      bootTask = null
+      return result
+    },
+    function (err) {
+      bootTask = null
+      throw err
+    }
+  )
+  bootTask = task
+  return task
 }
 
 export function initializeAuthContext(): Promise<AppState> {
@@ -129,3 +140,5 @@ export function getCurrentAuthState(): AppState {
   syncGlobalData(current)
   return current
 }
+
+export { isSessionValid }

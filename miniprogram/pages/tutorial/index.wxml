@@ -1,0 +1,48 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">教学视频</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="搜索教程标题"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+    <view class="filter-row">
+      <block wx:for="{{categoryOptions}}" wx:key="key">
+        <view
+          class="filter-item {{currentCategory === item.key ? 'filter-active' : ''}}"
+          data-category="{{item.key}}"
+          bindtap="onCategoryChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view wx:if="{{!filteredTutorials.length}}" class="hint-text">暂无匹配的教程</view>
+
+    <block wx:for="{{filteredTutorials}}" wx:key="id">
+      <view class="tutorial-item" data-id="{{item.id}}" bindtap="playTutorial">
+        <view class="tutorial-cover">
+          <view class="cover-text">{{item.coverText}}</view>
+          <view class="cover-play">▶</view>
+        </view>
+        <view class="tutorial-main">
+          <view class="tutorial-title">{{item.title}}</view>
+          <view class="tutorial-desc">{{item.description}}</view>
+          <view class="tutorial-meta">
+            <view class="meta-duration">{{item.duration}}</view>
+            <view wx:if="{{watchedIds.indexOf(item.id) >= 0}}" class="meta-watched">已观看</view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

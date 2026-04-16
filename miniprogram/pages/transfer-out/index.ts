@@ -127,7 +127,7 @@ Component({
       const index = Number(e.detail.value || 0)
       this.setData({
         warehouseIndex: index,
-        targetWarehouse: warehouseOptions[index]?.value || '',
+        targetWarehouse: (warehouseOptions[index] && warehouseOptions[index].value) || '',
       })
       this.saveDraft()
     },
@@ -209,7 +209,7 @@ Component({
         name: selectedStock.name,
         location: selectedStock.location,
         qty,
-        targetWarehouse: warehouseOptions.find((w) => w.value === targetWarehouse)?.label || targetWarehouse,
+        targetWarehouse: (function () { var found = warehouseOptions.find(function (w) { return w.value === targetWarehouse }); return found ? found.label : targetWarehouse })(),
       }
 
       const newList = [...transferList, newItem]

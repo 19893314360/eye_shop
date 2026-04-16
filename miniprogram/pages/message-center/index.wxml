@@ -1,0 +1,38 @@
+<view class="page">
+  <!-- 消息统计 -->
+  <view class="stats-bar">
+    <view class="stat-item">
+      <view class="stat-num">{{unreadCount}}</view>
+      <view class="stat-text">未读消息</view>
+    </view>
+    <view class="stat-item" bindtap="markAllRead">
+      <view class="stat-num">{{totalCount}}</view>
+      <view class="stat-text">全部消息</view>
+    </view>
+    <view class="stat-item" bindtap="clearRead">
+      <view class="stat-icon">🗑️</view>
+      <view class="stat-text">清空已读</view>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <view class="message-list">
+    <view wx:if="{{!messages.length}}" class="empty-hint">暂无消息</view>
+
+    <block wx:for="{{messages}}" wx:key="id">
+      <view class="message-card {{item.read ? '' : 'message-unread'}}" data-id="{{item.id}}" bindtap="viewDetail">
+        <view class="msg-icon {{'icon-' + item.type}}">
+          {{item.typeIcon}}
+        </view>
+        <view class="msg-content">
+          <view class="msg-header">
+            <view class="msg-title">{{item.title}}</view>
+            <view class="msg-time">{{item.timeText}}</view>
+          </view>
+          <view class="msg-desc">{{item.content}}</view>
+        </view>
+        <view wx:if="{{!item.read}}" class="unread-dot"></view>
+      </view>
+    </block>
+  </view>
+</view>

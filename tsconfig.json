@@ -3,7 +3,7 @@
     "strictNullChecks": true,
     "noImplicitAny": true,
     "module": "CommonJS",
-    "target": "ES2020",
+    "target": "ES2017",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -17,7 +17,7 @@
     "strict": true,
     "strictPropertyInitialization": true,
     "skipLibCheck": true,
-    "lib": ["ES2020"],
+    "lib": ["ES2018"],
     "typeRoots": [
       "./typings"
     ]

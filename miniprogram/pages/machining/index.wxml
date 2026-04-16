@@ -1,0 +1,89 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">加工管理</view>
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view
+          class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}"
+          data-tab="{{item.key}}"
+          bindtap="onTabChange"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view class="section-title">
+      {{currentTab === 'pending' ? '待加工订单' : (currentTab === 'processing' ? '加工中订单' : '已完工记录')}}
+    </view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无数据</view>
+
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="item">
+        <view class="item-top">
+          <view class="order-no">{{item.orderNo}}</view>
+          <view class="status {{item.status === 'completed' ? 'status--done' : (item.status === 'processing' ? 'status--processing' : 'status--pending')}}">
+            {{item.statusLabel}}
+          </view>
+        </view>
+        <view class="main">{{item.memberName}} · {{item.itemName}}</view>
+        <view wx:if="{{item.note}}" class="meta note">备注：{{item.note}}</view>
+
+        <!-- 进度条（加工中） -->
+        <view wx:if="{{item.status === 'processing'}}" class="progress-row">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.progress}}%"></view>
+          </view>
+          <view class="progress-text">{{item.progress}}%</view>
+        </view>
+
+        <view class="meta">
+          <view wx:if="{{item.operator}}">操作人：{{item.operator}}</view>
+          <view wx:if="{{item.startedAt}}">开始：{{item.startedText}}</view>
+          <view wx:if="{{item.completedAt}}">完成：{{item.completedText}}</view>
+        </view>
+
+        <view class="actions">
+          <button
+            wx:if="{{item.status === 'pending'}}"
+            size="mini"
+            class="primary-btn"
+            data-id="{{item.id}}"
+            bindtap="startMachining"
+          >
+            开始加工
+          </button>
+          <button
+            wx:if="{{item.status === 'processing' && item.progress < 90}}"
+            size="mini"
+            class="secondary-btn"
+            data-id="{{item.id}}"
+            bindtap="updateProgress"
+          >
+            更新进度
+          </button>
+          <button
+            wx:if="{{item.status === 'processing' && item.progress >= 90}}"
+            size="mini"
+            class="primary-btn"
+            data-id="{{item.id}}"
+            bindtap="completeMachining"
+          >
+            完工入库
+          </button>
+          <button
+            size="mini"
+            class="secondary-btn"
+            data-id="{{item.id}}"
+            bindtap="viewDetail"
+          >
+            详情
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

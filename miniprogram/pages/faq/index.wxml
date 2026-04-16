@@ -1,0 +1,44 @@
+<view class="page">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input
+      class="search-input"
+      placeholder="搜索问题关键词"
+      value="{{keyword}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearch"
+    />
+  </view>
+
+  <!-- 分类 Tab -->
+  <view class="category-tabs">
+    <block wx:for="{{categoryOptions}}" wx:key="key">
+      <view
+        class="category-tab {{currentCategory === item.key ? 'category-active' : ''}}"
+        data-category="{{item.key}}"
+        bindtap="onCategoryChange"
+      >
+        {{item.label}}
+      </view>
+    </block>
+  </view>
+
+  <!-- 常见问题列表 -->
+  <view class="faq-list">
+    <view wx:if="{{!filteredFaqs.length}}" class="empty-hint">没有找到相关问题</view>
+
+    <block wx:for="{{filteredFaqs}}" wx:key="id">
+      <view class="faq-item" data-id="{{item.id}}" bindtap="toggleFaq">
+        <view class="faq-question">
+          <view class="q-icon">Q</view>
+          <view class="q-text">{{item.question}}</view>
+          <view class="q-arrow {{item.expanded ? 'arrow-up' : ''}}">▼</view>
+        </view>
+        <view wx:if="{{item.expanded}}" class="faq-answer">
+          <view class="a-icon">A</view>
+          <view class="a-text">{{item.answer}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

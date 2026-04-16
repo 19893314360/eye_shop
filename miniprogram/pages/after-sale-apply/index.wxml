@@ -1,0 +1,99 @@
+<view class="page">
+  <!-- 订单选择 -->
+  <view class="card">
+    <view class="section-title">选择订单</view>
+    <picker
+      mode="selector"
+      range="{{orderOptions}}"
+      range-key="label"
+      value="{{orderIndex}}"
+      bindchange="onOrderChange"
+    >
+      <view wx:if="{{orderIndex >= 0}}" class="picker-value">{{orderOptions[orderIndex].label}}</view>
+      <view wx:else class="picker-value">请选择订单</view>
+    </picker>
+  </view>
+
+  <!-- 售后类型 -->
+  <view class="card">
+    <view class="section-title">售后类型</view>
+    <view class="type-list">
+      <block wx:for="{{typeOptions}}" wx:key="value">
+        <view
+          class="type-item {{afterSaleType === item.value ? 'type-active' : ''}}"
+          data-type="{{item.value}}"
+          bindtap="onTypeChange"
+        >
+          <view class="type-icon">{{item.icon}}</view>
+          <view class="type-name">{{item.label}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 申请原因 -->
+  <view class="card">
+    <view class="section-title">申请原因</view>
+    <view class="reason-list">
+      <block wx:for="{{reasonOptions}}" wx:key="*this">
+        <view
+          class="reason-item {{reason === item ? 'reason-active' : ''}}"
+          data-reason="{{item}}"
+          bindtap="onReasonChange"
+        >
+          {{item}}
+        </view>
+      </block>
+    </view>
+    <view class="field">
+      <view class="field-label">补充说明</view>
+      <textarea
+        class="field-textarea"
+        maxlength="200"
+        placeholder="请详细描述您的问题（选填）"
+        value="{{remark}}"
+        bindinput="onRemarkInput"
+      />
+      <view class="char-count">{{remark.length}}/200</view>
+    </view>
+  </view>
+
+  <!-- 上传图片 -->
+  <view class="card">
+    <view class="section-title">上传凭证</view>
+    <view class="upload-area">
+      <block wx:for="{{images}}" wx:key="*this">
+        <view class="image-item">
+          <image class="upload-image" src="{{item}}" mode="aspectFill" />
+          <view class="image-delete" data-index="{{index}}" bindtap="deleteImage">×</view>
+        </view>
+      </block>
+      <view wx:if="{{images.length < 3}}" class="upload-btn" bindtap="chooseImage">
+        <view class="upload-icon">+</view>
+        <view class="upload-text">上传图片</view>
+      </view>
+    </view>
+    <view class="hint-text">最多上传 3 张图片，支持 jpg/png 格式</view>
+  </view>
+
+  <!-- 联系方式 -->
+  <view class="card">
+    <view class="section-title">联系方式</view>
+    <view class="field">
+      <view class="field-label">联系电话</view>
+      <input
+        class="field-input"
+        type="number"
+        maxlength="11"
+        placeholder="请输入联系电话"
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+      />
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-area">
+    <button class="submit-btn" loading="{{submitting}}" bindtap="submitApply">提交售后申请</button>
+  </view>
+</view>

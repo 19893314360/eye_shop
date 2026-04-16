@@ -1,0 +1,111 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">
+      人员与权限
+      <view class="add-link" bindtap="showAddStaff">+ 新增员工</view>
+    </view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="搜索姓名、手机号、门店"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+    <view class="filter-row">
+      <block wx:for="{{roleOptions}}" wx:key="key">
+        <view
+          class="filter-item {{filterRole === item.key ? 'filter-active' : ''}}"
+          data-role="{{item.key}}"
+          bindtap="onRoleFilter"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !filteredStaff.length}}" class="hint-text">暂无人员数据</view>
+
+    <block wx:for="{{filteredStaff}}" wx:key="id">
+      <view class="staff-item">
+        <view class="staff-header">
+          <view class="staff-avatar">{{item.name[0]}}</view>
+          <view class="staff-main">
+            <view class="staff-name">{{item.name}}</view>
+            <view class="staff-meta">{{item.storeName}} · {{item.phone}}</view>
+          </view>
+          <view class="staff-role {{item.role === 'manager' ? 'role-manager' : 'role-sales'}}">
+            {{item.role === 'manager' ? '管理者' : '销售员'}}
+          </view>
+        </view>
+        <view class="staff-perms">
+          <block wx:for="{{item.permissions}}" wx:for-item="perm" wx:key="*this">
+            <view class="perm-tag">{{permissionLabels[perm] || perm}}</view>
+          </block>
+          <view class="perm-tag {{item.wechatBound ? 'perm-bound' : 'perm-unbound'}}">
+            {{item.wechatBound ? '微信已绑定' : '微信未绑定'}}
+          </view>
+        </view>
+        <view class="staff-actions">
+          <button size="mini" class="secondary-btn" data-id="{{item.id}}" bindtap="viewStaff">详情</button>
+          <button size="mini" class="secondary-btn" data-id="{{item.id}}" bindtap="bindWechat">
+            {{item.wechatBound ? '解绑' : '绑定'}}
+          </button>
+          <button size="mini" class="{{item.status === 'active' ? 'danger-btn' : 'primary-btn'}}" data-id="{{item.id}}" bindtap="toggleStatus">
+            {{item.status === 'active' ? '停用' : '启用'}}
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 新增员工弹窗 -->
+  <view wx:if="{{showAddModal}}" class="modal-mask" bindtap="hideAddModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-title">新增员工</view>
+
+      <view class="modal-field">
+        <view class="modal-label">姓名</view>
+        <input class="modal-input" placeholder="请输入姓名" value="{{addForm.name}}" data-field="name" bindinput="onAddFormInput" />
+      </view>
+
+      <view class="modal-field">
+        <view class="modal-label">手机号</view>
+        <input class="modal-input" placeholder="请输入手机号" type="number" maxlength="11" value="{{addForm.phone}}" data-field="phone" bindinput="onAddFormInput" />
+      </view>
+
+      <view class="modal-field">
+        <view class="modal-label">角色</view>
+        <picker mode="selector" range="{{roleSelectOptions}}" range-key="label" value="{{0}}" bindchange="onAddRoleChange">
+          <view class="modal-picker">
+            {{addForm.role === 'manager' ? '管理者' : '销售员'}}
+            <text class="picker-arrow">></text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="modal-field">
+        <view class="modal-label">所属门店</view>
+        <picker mode="selector" range="{{storeOptions}}" value="{{0}}" bindchange="onAddStoreChange">
+          <view class="modal-picker">
+            {{addForm.storeName}}
+            <text class="picker-arrow">></text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="modal-hint">添加后，请让员工使用手机号对应的微信登录小程序完成绑定。</view>
+
+      <view class="modal-actions">
+        <button class="modal-btn cancel" bindtap="hideAddModal">取消</button>
+        <button class="modal-btn confirm" bindtap="confirmAddStaff">确认添加</button>
+      </view>
+    </view>
+  </view>
+</view>

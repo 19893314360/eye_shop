@@ -1,186 +1,92 @@
-.page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #f5f6f8;
-}
-
-.chat-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.message-list {
-  flex: 1;
-  padding: 24rpx;
-}
-
-.message-item {
-  display: flex;
-  margin-bottom: 24rpx;
-  align-items: flex-start;
-}
-
-.message-right {
-  flex-direction: row-reverse;
-}
-
-.avatar {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
+.info-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 24rpx;
-  font-weight: 600;
-  flex-shrink: 0;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
 }
 
-.avatar-user {
-  background: #f57c00;
-  color: #ffffff;
+.info-row:last-child {
+  border-bottom: none;
 }
 
-.avatar-service {
-  background: #4caf50;
-  color: #ffffff;
-}
-
-.message-bubble {
-  max-width: 70%;
-  padding: 20rpx 24rpx;
-  border-radius: 16rpx;
-  margin: 0 16rpx;
-}
-
-.bubble-user {
-  background: #f57c00;
-  color: #ffffff;
-  border-top-right-radius: 4rpx;
-}
-
-.bubble-service {
-  background: #ffffff;
-  color: #333333;
-  border-top-left-radius: 4rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
-}
-
-.bubble-content {
-  font-size: 28rpx;
-  line-height: 1.6;
-  word-break: break-word;
-}
-
-.bubble-time {
-  font-size: 22rpx;
-  margin-top: 8rpx;
-  opacity: 0.7;
-}
-
-.input-bar {
-  display: flex;
-  align-items: center;
-  padding: 16rpx 24rpx;
-  background: #ffffff;
-  border-top: 2rpx solid #eeeeee;
-  gap: 16rpx;
-}
-
-.input-field {
-  flex: 1;
-  height: 72rpx;
-  background: #f5f6f8;
-  border-radius: 36rpx;
-  padding: 0 24rpx;
-  font-size: 28rpx;
-}
-
-.send-btn {
-  width: 120rpx;
-  height: 72rpx;
-  background: #f57c00;
-  color: #ffffff;
-  font-size: 28rpx;
-  border-radius: 36rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.send-btn[disabled] {
-  background: #cccccc;
-  color: #ffffff;
-}
-
-.quick-replies {
-  padding: 16rpx 24rpx;
-  background: #ffffff;
-  border-top: 2rpx solid #f0f0f0;
-}
-
-.quick-title {
-  font-size: 24rpx;
-  color: #999999;
-  margin-bottom: 12rpx;
-}
-
-.quick-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-}
-
-.quick-item {
-  padding: 12rpx 24rpx;
-  background: #f5f6f8;
-  border-radius: 32rpx;
+.info-label {
+  color: #7a7a7a;
   font-size: 26rpx;
-  color: #666666;
-  border: 2rpx solid #eeeeee;
+  flex-shrink: 0;
+  width: 160rpx;
 }
 
-.quick-item:active {
-  background: #fff3e8;
-  border-color: #f57c00;
+.info-value {
+  color: #333333;
+  font-size: 26rpx;
+  text-align: right;
+  flex: 1;
+}
+
+.phone-value {
   color: #f57c00;
+  font-weight: 600;
 }
 
-.typing-indicator {
+.link-value {
+  color: #1a73e8;
+}
+
+.action-row {
   display: flex;
-  gap: 8rpx;
-  padding: 8rpx 0;
+  gap: 16rpx;
+  margin-top: 20rpx;
 }
 
-.typing-dot {
-  width: 12rpx;
-  height: 12rpx;
-  background: #999999;
-  border-radius: 50%;
-  animation: typingBounce 1.4s infinite ease-in-out;
+.action-btn {
+  flex: 1;
+  font-size: 26rpx !important;
 }
 
-.typing-dot:nth-child(1) {
-  animation-delay: 0s;
+.primary-btn {
+  background: #f57c00 !important;
+  color: #ffffff !important;
 }
 
-.typing-dot:nth-child(2) {
-  animation-delay: 0.2s;
+.secondary-btn {
+  background: #fff3e8 !important;
+  color: #f57c00 !important;
 }
 
-.typing-dot:nth-child(3) {
-  animation-delay: 0.4s;
+.faq-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
 }
 
-@keyframes typingBounce {
-  0%, 60%, 100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-8rpx);
-  }
+.faq-item:last-of-type {
+  border-bottom: none;
+}
+
+.faq-question {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.faq-arrow {
+  color: #cccccc;
+  font-size: 26rpx;
+}
+
+.faq-more {
+  margin-top: 16rpx;
+  text-align: center;
+  color: #1a73e8;
+  font-size: 26rpx;
+  padding: 12rpx 0;
+}
+
+.hint-text {
+  text-align: center;
+  color: #7a7a7a;
+  font-size: 26rpx;
+  padding: 60rpx 0;
 }

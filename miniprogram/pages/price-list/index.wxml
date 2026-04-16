@@ -1,0 +1,47 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">镜片价目册</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="搜索镜片名称、SKU、供应商"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+    <view class="filter-row">
+      <block wx:for="{{categoryOptions}}" wx:key="key">
+        <view
+          class="filter-item {{filterCategory === item.key ? 'filter-active' : ''}}"
+          data-category="{{item.key}}"
+          bindtap="onCategoryFilter"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无匹配镜片</view>
+
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="lens-item" data-id="{{item.id}}" bindtap="viewDetail">
+        <view class="lens-header">
+          <view class="lens-name">{{item.name}}</view>
+          <view class="lens-stock {{item.stock === '少量' ? 'stock-warn' : ''}}">{{item.stock}}</view>
+        </view>
+        <view class="lens-meta">{{item.sku}} · {{categoryMap[item.category]}} · 折射率 {{item.refractiveIndex}}</view>
+        <view class="lens-meta">供应商：{{item.supplier}}</view>
+        <view class="lens-price-row">
+          <view class="lens-price">￥{{item.price}}</view>
+          <view class="lens-member-price">会员价 ￥{{item.memberPrice}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

@@ -1,4 +1,4 @@
-import { ensureAuthReady, getCurrentAuthState, switchRole } from '../../services/auth-session'
+import { ensureAuthReady, switchRole } from '../../services/auth-session'
 import { ROLE_LABEL, ROLE_OPTIONS } from '../../utils/role'
 
 Component({
@@ -6,6 +6,7 @@ Component({
     roleOptions: ROLE_OPTIONS,
     currentRole: 'sales' as UserRole,
     currentRoleLabel: ROLE_LABEL.sales,
+    userName: '',
     loading: true,
   },
   lifetimes: {
@@ -16,31 +17,23 @@ Component({
   methods: {
     async initPage() {
       try {
-        await ensureAuthReady()
-      } catch (error) {
-        const message = error instanceof Error ? error.message : '初始化失败'
-        wx.showToast({
-          title: message,
-          icon: 'none',
+        const state = await ensureAuthReady()
+        this.setData({
+          currentRole: state.role,
+          currentRoleLabel: ROLE_LABEL[state.role],
+          userName: state.userName || '',
+          loading: false,
         })
-      } finally {
-        this.syncRole()
+      } catch {
+        this.setData({ loading: false })
       }
-    },
-    syncRole() {
-      const role = getCurrentAuthState().role
-      this.setData({
-        currentRole: role,
-        currentRoleLabel: ROLE_LABEL[role],
-        loading: false,
-      })
     },
     async chooseRole(e: WechatMiniprogram.TouchEvent) {
       if (this.data.loading) {
         return
       }
       const role = e.currentTarget.dataset.role as UserRole
-      if (!role) {
+      if (!role || role === this.data.currentRole) {
         return
       }
       this.setData({ loading: true })
@@ -62,6 +55,13 @@ Component({
       } finally {
         this.setData({ loading: false })
       }
+    },
+    goBack() {
+      wx.navigateBack({
+        fail() {
+          wx.reLaunch({ url: '/pages/home/index' })
+        },
+      })
     },
   },
 })

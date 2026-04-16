@@ -11,6 +11,19 @@ interface AfterSaleRecord {
   updatedAt: number
 }
 
+interface CustomerApply {
+  id: string
+  orderId: string
+  type: string
+  reason: string
+  remark: string
+  phone: string
+  images: string[]
+  status: string
+  applicant: string
+  createdAt: number
+}
+
 interface AfterSaleItem {
   orderId: string
   orderNo: string
@@ -21,9 +34,15 @@ interface AfterSaleItem {
   updatedText: string
   canFollowup: boolean
   canRecheck: boolean
+  applyId?: string
+  applyType?: string
+  applyReason?: string
+  applyStatus?: string
+  isCustomerApply?: boolean
 }
 
 const RECORD_STORAGE_KEY = 'yanjing-after-sale-records'
+const APPLY_STORAGE_KEY = 'yanjing-after-sale-applies'
 
 const tabOptions: Array<{ key: AfterSaleTab; label: string }> = [
   { key: 'followup', label: '待回访' },
@@ -76,7 +95,7 @@ Component({
     getRouteOptions(): Record<string, string> {
       const pages = getCurrentPages()
       const current = pages[pages.length - 1] as unknown as { options?: Record<string, string> }
-      return current?.options || {}
+      return (current && current.options) || {}
     },
     applyRouteParams() {
       const options = this.getRouteOptions()
@@ -99,6 +118,11 @@ Component({
     },
     saveRecordMap(map: Record<string, AfterSaleRecord>) {
       wx.setStorageSync(RECORD_STORAGE_KEY, map)
+    },
+    readCustomerApplies(): CustomerApply[] {
+      const raw = wx.getStorageSync(APPLY_STORAGE_KEY)
+      if (!Array.isArray(raw)) return []
+      return raw as CustomerApply[]
     },
     async ensureAccess(): Promise<boolean> {
       try {
@@ -182,6 +206,71 @@ Component({
           canRecheck: role !== 'customer' && record.followed && !record.rechecked,
         }))
     },
+    mapCustomerAppliesToItems(
+      applies: CustomerApply[],
+      recordMap: Record<string, AfterSaleRecord>,
+      currentTab: AfterSaleTab,
+      keyword: string,
+      role: UserRole
+    ): AfterSaleItem[] {
+      const normalizedKeyword = keyword.trim()
+      const typeLabels: Record<string, string> = {
+        return: '退货',
+        exchange: '换货',
+        repair: '维修',
+        refund: '退款',
+      }
+
+      const filtered = applies.filter((apply) => {
+        if (role === 'customer') {
+          return true
+        }
+        if (currentTab === 'followup') {
+          return apply.status === 'pending'
+        }
+        if (currentTab === 'recheck') {
+          const record = recordMap[apply.orderId]
+          return apply.status === 'pending' && record && record.followed === true && !record.rechecked
+        }
+        // history: show pending or processed
+        return true
+      })
+
+      const filteredByKeyword = filtered.filter((apply) => {
+        if (!normalizedKeyword) {
+          return true
+        }
+        return (
+          apply.id.includes(normalizedKeyword) ||
+          apply.orderId.includes(normalizedKeyword) ||
+          apply.applicant.includes(normalizedKeyword) ||
+          apply.reason.includes(normalizedKeyword)
+        )
+      })
+
+      return filteredByKeyword
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .map((apply) => {
+          const record = recordMap[apply.orderId] || { followed: false, rechecked: false, updatedAt: 0 }
+          const typeLabel = typeLabels[apply.type] || apply.type
+          return {
+            orderId: apply.orderId,
+            orderNo: apply.id,
+            memberName: apply.applicant,
+            itemName: `${typeLabel}申请`,
+            amount: 0,
+            createdText: formatTime(new Date(apply.createdAt)),
+            updatedText: record.updatedAt ? formatTime(new Date(record.updatedAt)) : '--',
+            canFollowup: role !== 'customer' && apply.status === 'pending' && !record.followed,
+            canRecheck: role !== 'customer' && apply.status === 'pending' && record.followed && !record.rechecked,
+            applyId: apply.id,
+            applyType: typeLabel,
+            applyReason: apply.reason,
+            applyStatus: apply.status,
+            isCustomerApply: true,
+          }
+        })
+    },
     async refreshList() {
       const allowed = await this.ensureAccess()
       if (!allowed) {
@@ -194,16 +283,28 @@ Component({
           keyword: this.data.keyword.trim(),
         })
         const recordMap = this.readRecordMap()
-        this.setData({
-          list: this.mapToAfterSaleItems(
-            orders,
-            recordMap,
-            this.data.currentTab,
-            this.data.keyword,
-            this.data.orderIdFromRoute,
-            this.data.role
-          ),
-        })
+        const applies = this.readCustomerApplies()
+
+        // Merge: order-based items + customer application items
+        const orderItems = this.mapToAfterSaleItems(
+          orders,
+          recordMap,
+          this.data.currentTab,
+          this.data.keyword,
+          this.data.orderIdFromRoute,
+          this.data.role
+        )
+        const applyItems = this.mapCustomerAppliesToItems(
+          applies,
+          recordMap,
+          this.data.currentTab,
+          this.data.keyword,
+          this.data.role
+        )
+
+        // Combine and sort by creation time
+        const allItems = [...orderItems, ...applyItems]
+        this.setData({ list: allItems })
       } catch (error) {
         const message = error instanceof Error ? error.message : '加载售后列表失败'
         wx.showToast({
@@ -249,6 +350,19 @@ Component({
         followed: true,
         updatedAt: Date.now(),
       }))
+
+      // Also update customer application status
+      const applies = this.readCustomerApplies()
+      const updatedApplies = applies.map((apply) => {
+        if (apply.orderId === orderId && apply.status === 'pending') {
+          return { ...apply, status: 'followed_up' }
+        }
+        return apply
+      })
+      if (JSON.stringify(applies) !== JSON.stringify(updatedApplies)) {
+        wx.setStorageSync(APPLY_STORAGE_KEY, updatedApplies)
+      }
+
       wx.showToast({
         title: '回访已登记',
         icon: 'success',
@@ -266,6 +380,19 @@ Component({
         rechecked: true,
         updatedAt: Date.now(),
       }))
+
+      // Also update customer application status
+      const applies = this.readCustomerApplies()
+      const updatedApplies = applies.map((apply) => {
+        if (apply.orderId === orderId && (apply.status === 'pending' || apply.status === 'followed_up')) {
+          return { ...apply, status: 'completed' }
+        }
+        return apply
+      })
+      if (JSON.stringify(applies) !== JSON.stringify(updatedApplies)) {
+        wx.setStorageSync(APPLY_STORAGE_KEY, updatedApplies)
+      }
+
       wx.showToast({
         title: '复查已处理',
         icon: 'success',

@@ -106,7 +106,7 @@ export function getAppState(): AppState {
 }
 
 export function isSessionValid(now = Date.now()): boolean {
-  return Boolean(state.token) && state.expiresAt > now + 30_000
+  return Boolean(state.token) && state.expiresAt > now + 30000
 }
 
 export function setSession(session: LoginResult) {

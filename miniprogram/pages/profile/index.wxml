@@ -1,0 +1,50 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+
+  <block wx:if="{{!loading}}">
+    <!-- 头像区域 -->
+    <view class="card profile-header">
+      <view class="avatar">{{fields[0].value[0] || '用'}}</view>
+      <view class="header-info">
+        <view class="header-name">{{fields[0].value || '未设置'}}</view>
+        <view class="header-role">{{roleLabel}}端</view>
+      </view>
+      <button size="mini" class="role-btn" bindtap="switchRole">切换角色</button>
+    </view>
+
+    <!-- 个人信息 -->
+    <view class="card">
+      <view class="section-title">
+        个人信息
+        <view wx:if="{{!editing}}" class="edit-link" bindtap="startEdit">编辑</view>
+      </view>
+      <block wx:for="{{fields}}" wx:key="key">
+        <view class="field-row">
+          <view class="field-label">{{item.label}}</view>
+          <view wx:if="{{!editing || !item.editable}}" class="field-value">{{item.value || '--'}}</view>
+          <input
+            wx:if="{{editing && item.editable}}"
+            class="field-input"
+            value="{{editData[item.key]}}"
+            data-key="{{item.key}}"
+            bindinput="onFieldInput"
+          />
+        </view>
+      </block>
+    </view>
+
+    <!-- 最近登录 -->
+    <view class="card">
+      <view class="field-row">
+        <view class="field-label">最近登录</view>
+        <view class="field-value">{{lastLoginText}}</view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view wx:if="{{editing}}" class="action-row">
+      <button class="action-btn cancel-btn" bindtap="cancelEdit">取消</button>
+      <button class="action-btn save-btn" bindtap="saveEdit">保存</button>
+    </view>
+  </block>
+</view>

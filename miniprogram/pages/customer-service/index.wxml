@@ -1,57 +1,47 @@
 <view class="page">
-  <view class="chat-container">
-    <scroll-view
-      class="message-list"
-      scroll-y
-      scroll-into-view="{{scrollToView}}"
-      scroll-with-animation
-    >
-      <block wx:for="{{messages}}" wx:key="id">
-        <view class="message-item {{item.role === 'user' ? 'message-right' : 'message-left'}}" id="msg-{{item.id}}">
-          <view class="avatar {{item.role === 'user' ? 'avatar-user' : 'avatar-service'}}">
-            {{item.role === 'user' ? '我' : '客'}}
-          </view>
-          <view class="message-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-service'}}">
-            <view class="bubble-content">{{item.content}}</view>
-            <view class="bubble-time">{{item.timeText}}</view>
-          </view>
-        </view>
-      </block>
+  <view wx:if="{{loading}}" class="hint-text">加载中...</view>
 
-      <view wx:if="{{typing}}" class="message-item message-left">
-        <view class="avatar avatar-service">客</view>
-        <view class="message-bubble bubble-service">
-          <view class="typing-indicator">
-            <view class="typing-dot"></view>
-            <view class="typing-dot"></view>
-            <view class="typing-dot"></view>
-          </view>
-        </view>
+  <block wx:if="{{!loading}}">
+    <!-- 门店信息 -->
+    <view class="card">
+      <view class="section-title">{{storeName}}</view>
+      <view class="info-row">
+        <view class="info-label">门店电话</view>
+        <view class="info-value phone-value" bindtap="callStore">{{storePhone}}</view>
       </view>
-    </scroll-view>
-
-    <view class="input-bar">
-      <input
-        class="input-field"
-        placeholder="请输入您的问题..."
-        value="{{inputValue}}"
-        bindinput="onInput"
-        bindconfirm="sendMessage"
-        confirm-type="send"
-        disabled="{{sending}}"
-      />
-      <button class="send-btn" bindtap="sendMessage" disabled="{{!inputValue.trim() || sending}}">
-        {{sending ? '发送中' : '发送'}}
-      </button>
+      <view class="info-row">
+        <view class="info-label">门店地址</view>
+        <view class="info-value link-value" bindtap="openLocation">{{storeAddress}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">营业时间</view>
+        <view class="info-value">{{workTime}}</view>
+      </view>
     </view>
-  </view>
 
-  <view class="quick-replies">
-    <view class="quick-title">常见问题</view>
-    <view class="quick-list">
-      <block wx:for="{{quickReplies}}" wx:key="*this">
-        <view class="quick-item" data-text="{{item}}" bindtap="sendQuickReply">{{item}}</view>
+    <!-- 在线客服 -->
+    <view class="card">
+      <view class="section-title">在线客服</view>
+      <view class="info-row">
+        <view class="info-label">服务时间</view>
+        <view class="info-value">{{onlineTime}}</view>
+      </view>
+      <view class="action-row">
+        <button class="action-btn primary-btn" bindtap="callStore">电话咨询</button>
+        <button class="action-btn secondary-btn" bindtap="copyPhone">复制电话</button>
+      </view>
+    </view>
+
+    <!-- 常见问题快捷入口 -->
+    <view class="card">
+      <view class="section-title">常见问题</view>
+      <block wx:for="{{faqItems}}" wx:key="question">
+        <view class="faq-item" data-route="{{item.route}}" bindtap="goFaqItem">
+          <view class="faq-question">{{item.question}}</view>
+          <view class="faq-arrow">></view>
+        </view>
       </block>
+      <view class="faq-more" bindtap="goFaq">查看全部常见问题 ></view>
     </view>
-  </view>
+  </block>
 </view>

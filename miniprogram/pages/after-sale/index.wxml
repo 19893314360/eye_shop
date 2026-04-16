@@ -38,11 +38,14 @@
       <view class="item">
         <view class="item-top">
           <view class="order-no">{{item.orderNo}}</view>
-          <view class="amount">￥{{item.amount}}</view>
+          <view class="amount" wx:if="{{!item.isCustomerApply}}">￥{{item.amount}}</view>
+          <view class="apply-type" wx:if="{{item.isCustomerApply}}">{{item.applyType}}</view>
         </view>
         <view class="main">{{item.memberName}} · {{item.itemName}}</view>
+        <view class="apply-reason" wx:if="{{item.isCustomerApply}}">原因：{{item.applyReason}}</view>
         <view class="meta">
-          <view>开单时间 {{item.createdText}}</view>
+          <view wx:if="{{!item.isCustomerApply}}">开单时间 {{item.createdText}}</view>
+          <view wx:if="{{item.isCustomerApply}}">申请时间 {{item.createdText}}</view>
           <view>处理时间 {{item.updatedText}}</view>
         </view>
         <view class="actions">
@@ -65,6 +68,7 @@
             处理复查
           </button>
           <button
+            wx:if="{{!item.isCustomerApply}}"
             size="mini"
             class="secondary-btn"
             data-id="{{item.orderId}}"

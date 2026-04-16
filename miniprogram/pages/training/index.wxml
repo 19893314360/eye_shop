@@ -17,7 +17,15 @@
   <view wx:if="{{loading}}" class="card hint-text">加载中...</view>
 
   <view wx:if="{{!loading && currentTab === 'plan'}}" class="card panel">
-    <view class="section-title">视训方案</view>
+    <view class="section-title-row">
+      <view class="section-title">视训方案</view>
+      <button
+        wx:if="{{role !== 'customer'}}"
+        class="add-btn"
+        size="mini"
+        bindtap="openCreateForm"
+      >+ 新建</button>
+    </view>
     <block wx:for="{{planList}}" wx:key="id">
       <view class="item">
         <view class="item-top">
@@ -109,5 +117,44 @@
       />
     </view>
     <button class="primary-btn" loading="{{savingReminder}}" bindtap="saveReminderConfig">保存提醒设置</button>
+  </view>
+
+  <!-- ===================== 新建方案弹窗 ===================== -->
+  <view wx:if="{{showCreateForm}}" class="modal-mask" bindtap="closeCreateForm">
+    <view class="modal-body" catchtap="">
+      <view class="modal-title">新建视训方案</view>
+      <view class="field">
+        <view class="field-label">客户姓名</view>
+        <input
+          class="field-input"
+          placeholder="请输入客户姓名"
+          value="{{newPlan.customerName}}"
+          bindinput="onNewPlanCustomerInput"
+        />
+      </view>
+      <view class="field">
+        <view class="field-label">方案名称</view>
+        <input
+          class="field-input"
+          placeholder="如：双眼协调训练"
+          value="{{newPlan.planName}}"
+          bindinput="onNewPlanNameInput"
+        />
+      </view>
+      <view class="field">
+        <view class="field-label">训练次数</view>
+        <input
+          class="field-input"
+          type="number"
+          placeholder="请输入训练次数"
+          value="{{newPlan.total}}"
+          bindinput="onNewPlanTotalChange"
+        />
+      </view>
+      <view class="modal-actions">
+        <button class="modal-cancel" bindtap="closeCreateForm">取消</button>
+        <button class="modal-confirm" loading="{{creating}}" bindtap="submitNewPlan">确认创建</button>
+      </view>
+    </view>
   </view>
 </view>

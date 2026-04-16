@@ -108,7 +108,7 @@ Component({
     getRouteOptions(): Record<string, string> {
       const pages = getCurrentPages()
       const current = pages[pages.length - 1] as unknown as { options?: Record<string, string> }
-      return current?.options || {}
+      return (current && current.options) || {}
     },
     applyRouteParams() {
       const options = this.getRouteOptions()
@@ -264,9 +264,10 @@ Component({
         editable: true,
         placeholderText: String(item.qty),
         success: (res) => {
-          if (res.confirm && res.content) {
-            const newQty = parseInt(res.content, 10)
-            if (isNaN(newQty) || newQty < 0) {
+          if (res.confirm) {
+            const raw = String(res.content || '').trim()
+            const newQty = parseInt(raw, 10)
+            if (!raw || isNaN(newQty) || newQty < 0) {
               wx.showToast({ title: '请输入有效数量', icon: 'none' })
               return
             }

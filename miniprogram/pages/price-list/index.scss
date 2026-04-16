@@ -1,0 +1,128 @@
+.page {
+  padding-bottom: 32rpx;
+}
+
+.search-row {
+  display: flex;
+  gap: 12rpx;
+  align-items: center;
+  margin-top: 16rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 64rpx;
+  padding: 0 20rpx;
+  font-size: 26rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  background: #f9f9f9;
+}
+
+.search-btn {
+  background: #f57c00;
+  color: #fff;
+  border: none;
+  font-size: 24rpx;
+  padding: 0 24rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  border-radius: 8rpx;
+
+  &::after {
+    border: none;
+  }
+}
+
+.filter-row {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 16rpx;
+  flex-wrap: wrap;
+}
+
+.filter-item {
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  color: #666;
+  background: #f5f6f8;
+  border-radius: 20rpx;
+}
+
+.filter-active {
+  color: #fff;
+  background: #f57c00;
+}
+
+.list-card {
+  margin-top: 20rpx;
+}
+
+.lens-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.lens-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.lens-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.lens-stock {
+  font-size: 24rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.stock-warn {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.lens-meta {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+}
+
+.lens-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  margin-top: 12rpx;
+}
+
+.lens-price {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #e53935;
+}
+
+.lens-member-price {
+  font-size: 24rpx;
+  color: #f57c00;
+  background: #fff3e0;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.hint-text {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 48rpx 0;
+}

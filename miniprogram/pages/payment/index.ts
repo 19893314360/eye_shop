@@ -52,7 +52,7 @@ Component({
     getPreferredOrderIdFromQuery(): string {
       const pages = getCurrentPages()
       const current = pages[pages.length - 1] as unknown as { options?: Record<string, string> }
-      const orderId = current?.options?.orderId || ''
+      const orderId = (current && current.options && current.options.orderId) || ''
       return orderId
     },
     syncPaidAmount(order: SalesOrder | undefined) {
@@ -118,7 +118,7 @@ Component({
         wx.showToast({ title: '请输入有效实收金额', icon: 'none' })
         return
       }
-      const payChannel = payChannelOptions[this.data.payChannelIndex]?.value || 'wechat'
+      const payChannel = (payChannelOptions[this.data.payChannelIndex] && payChannelOptions[this.data.payChannelIndex].value) || 'wechat'
 
       this.setData({ submitting: true })
       try {

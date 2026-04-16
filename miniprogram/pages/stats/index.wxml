@@ -1,36 +1,218 @@
-<view class="page">
-  <view wx:if="{{loading}}" class="card loading-card">正在同步登录态...</view>
+<view class="page stats-page">
+  <view wx:if="{{loading}}" class="stats-panel card loading-panel">数据加载中...</view>
 
-  <block wx:if="{{canView}}">
-    <view class="card summary-card">
-      <view class="summary-title">{{roleLabel}}统计概览</view>
-      <view class="summary-grid">
-        <block wx:for="{{summary}}" wx:key="label">
-          <view class="summary-item">
-            <view class="summary-label">{{item.label}}</view>
-            <view class="summary-value">{{item.value}}</view>
+  <block wx:elif="{{isManager && managerStats}}">
+    <view class="stats-panel card">
+      <view class="panel-header">
+        <view class="panel-title-wrap">
+          <view class="panel-dot panel-dot--pink"></view>
+          <text class="panel-title">经营状况</text>
+        </view>
+        <view class="period-switch">
+          <view class="period-option {{period === 'month' ? 'period-option--active' : ''}}" data-period="month" bindtap="onPeriodChange">
+            <view class="period-radio"></view>
+            <text>本月</text>
           </view>
-        </block>
+          <view class="period-option {{period === 'today' ? 'period-option--active' : ''}}" data-period="today" bindtap="onPeriodChange">
+            <view class="period-radio"></view>
+            <text>今日</text>
+          </view>
+        </view>
       </view>
+
+      <view class="business-tabs">
+        <view class="business-tab {{businessTab === 'overview' ? 'business-tab--active' : ''}}" data-tab="overview" bindtap="onBusinessTabChange">总览</view>
+        <view class="business-tab {{businessTab === 'detail' ? 'business-tab--active' : ''}}" data-tab="detail" bindtap="onBusinessTabChange">详情</view>
+        <view class="business-tab {{businessTab === 'collection' ? 'business-tab--active' : ''}}" data-tab="collection" bindtap="onBusinessTabChange">收款</view>
+        <view class="business-tab {{businessTab === 'arrears' ? 'business-tab--active' : ''}}" data-tab="arrears" bindtap="onBusinessTabChange">欠款</view>
+      </view>
+
+      <block wx:if="{{businessTab === 'overview'}}">
+        <view class="headline-row">
+          <view class="headline-item">
+            <view class="headline-label">单据总数</view>
+            <view class="headline-value">{{managerStats.overview.totalOrders}}</view>
+          </view>
+          <view class="headline-item headline-item--primary">
+            <view class="headline-label">销售合计</view>
+            <view class="headline-value">{{managerStats.overview.totalSales}}</view>
+          </view>
+          <view class="headline-item">
+            <view class="headline-label">配镜客单价</view>
+            <view class="headline-value">{{managerStats.overview.avgOrderAmount}}</view>
+          </view>
+        </view>
+
+        <view class="summary-table">
+          <view class="summary-row summary-row--header">
+            <view>销售数量</view>
+            <view>销售金额</view>
+            <view>退货数量</view>
+            <view>退货金额</view>
+          </view>
+          <view class="summary-row">
+            <view>{{managerStats.overview.salesQuantity}}</view>
+            <view class="summary-accent">¥ {{managerStats.overview.salesAmount}}</view>
+            <view>{{managerStats.overview.refundQuantity}}</view>
+            <view class="summary-accent">¥ {{managerStats.overview.refundAmount}}</view>
+          </view>
+        </view>
+
+        <view class="order-summary">
+          <view class="order-summary__title">{{managerStats.overview.orderSummaryLabel}}</view>
+          <view class="order-summary__meta">单据数：{{managerStats.overview.orderCount}}</view>
+          <view class="order-summary__meta">销售数：{{managerStats.overview.soldQuantity}}</view>
+          <view class="order-summary__meta">销售额：{{managerStats.overview.soldAmount}}</view>
+        </view>
+      </block>
+
+      <block wx:elif="{{businessTab === 'detail'}}">
+        <view class="detail-table">
+          <view class="detail-table__row detail-table__row--header">
+            <view>业务项目</view>
+            <view>单据数</view>
+            <view>销售数</view>
+            <view>金额</view>
+          </view>
+          <block wx:for="{{managerStats.detail}}" wx:key="label">
+            <view class="detail-table__row">
+              <view class="detail-table__label">{{item.label}}</view>
+              <view>{{item.orderCount}}</view>
+              <view>{{item.saleCount}}</view>
+              <view class="detail-table__amount">¥ {{item.amount}}</view>
+            </view>
+          </block>
+        </view>
+      </block>
+
+      <block wx:elif="{{businessTab === 'collection'}}">
+        <view class="detail-table detail-table--three">
+          <view class="detail-table__row detail-table__row--header detail-table__row--three">
+            <view>收款方式</view>
+            <view>笔数</view>
+            <view>金额</view>
+          </view>
+          <block wx:for="{{managerStats.collection}}" wx:key="label">
+            <view class="detail-table__row detail-table__row--three">
+              <view class="detail-table__label">{{item.label}}</view>
+              <view>{{item.count}}</view>
+              <view class="detail-table__amount">¥ {{item.amount}}</view>
+            </view>
+          </block>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="detail-table">
+          <view class="detail-table__row detail-table__row--header">
+            <view>客户</view>
+            <view>手机号</view>
+            <view>欠款</view>
+            <view>逾期</view>
+          </view>
+          <block wx:for="{{managerStats.arrears}}" wx:key="phone">
+            <view class="detail-table__row">
+              <view class="detail-table__label">{{item.customer}}</view>
+              <view>{{item.phone}}</view>
+              <view class="detail-table__amount">¥ {{item.amount}}</view>
+              <view class="detail-table__warn">{{item.overdue}}</view>
+            </view>
+          </block>
+        </view>
+      </block>
     </view>
 
-    <view class="card rank-card">
-      <view class="summary-title">{{role === 'manager' ? '门店排行' : '销售员排行榜'}}</view>
-      <block wx:for="{{rank}}" wx:key="name">
-        <view class="rank-item">
-          <view class="rank-left">
-            <view class="rank-index">{{index + 1}}</view>
-            <view>{{item.name}}</view>
+    <view class="stats-panel card">
+      <view class="panel-header">
+        <view class="panel-title-wrap">
+          <view class="panel-dot panel-dot--gold"></view>
+          <text class="panel-title">销售员排行榜</text>
+        </view>
+        <view class="period-switch">
+          <view class="period-option {{period === 'month' ? 'period-option--active' : ''}}" data-period="month" bindtap="onPeriodChange">
+            <view class="period-radio"></view>
+            <text>本月</text>
           </view>
-          <view class="rank-amount">{{item.amount}}</view>
+          <view class="period-option {{period === 'today' ? 'period-option--active' : ''}}" data-period="today" bindtap="onPeriodChange">
+            <view class="period-radio"></view>
+            <text>今日</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="rank-header">
+        <view>姓名（显示前五）</view>
+        <view class="rank-header__amount">销售业绩</view>
+      </view>
+
+      <block wx:for="{{managerStats.salesRank}}" wx:key="rank">
+        <view class="rank-row">
+          <view class="rank-row__left">
+            <view class="rank-medal rank-medal--{{item.medalType}}">{{item.rank}}</view>
+            <view class="rank-name">{{item.name}}</view>
+          </view>
+          <view class="rank-value">¥{{item.amount}}</view>
         </view>
       </block>
     </view>
   </block>
 
-  <view wx:else class="card empty-card">
-    <view class="empty-title">客户端不开放经营统计</view>
-    <view class="empty-text">你可以在“首页”和“我的”查看订单、档案、预约和消息。</view>
+  <block wx:elif="{{isSales && salesDashboard}}">
+    <view class="stats-panel card">
+      <view class="panel-header">
+        <view class="panel-title-wrap">
+          <view class="panel-dot panel-dot--pink"></view>
+          <text class="panel-title">我的业绩</text>
+        </view>
+        <view class="period-switch">
+          <view class="period-option {{period === 'month' ? 'period-option--active' : ''}}" data-period="month" bindtap="onPeriodChange">
+            <view class="period-radio"></view>
+            <text>本月</text>
+          </view>
+          <view class="period-option {{period === 'today' ? 'period-option--active' : ''}}" data-period="today" bindtap="onPeriodChange">
+            <view class="period-radio"></view>
+            <text>今日</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="sales-grid">
+        <block wx:for="{{salesDashboard.overview}}" wx:key="label">
+          <view class="sales-card {{item.accent === 'primary' ? 'sales-card--primary' : ''}} {{item.accent === 'warning' ? 'sales-card--warning' : ''}}">
+            <view class="sales-card__label">{{item.label}}</view>
+            <view class="sales-card__value">{{item.value}}<text wx:if="{{item.unit}}" class="sales-card__unit">{{item.unit}}</text></view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="stats-panel card">
+      <view class="panel-header">
+        <view class="panel-title-wrap">
+          <view class="panel-dot panel-dot--gold"></view>
+          <text class="panel-title">门店排行榜</text>
+        </view>
+      </view>
+
+      <view class="rank-header">
+        <view>姓名（显示前五）</view>
+        <view class="rank-header__amount">销售业绩</view>
+      </view>
+
+      <block wx:for="{{salesDashboard.salesRank}}" wx:key="rank">
+        <view class="rank-row">
+          <view class="rank-row__left">
+            <view class="rank-medal rank-medal--{{item.medalType}}">{{item.rank}}</view>
+            <view class="rank-name">{{item.name}}</view>
+          </view>
+          <view class="rank-value">¥{{item.amount}}</view>
+        </view>
+      </block>
+    </view>
+  </block>
+
+  <view wx:else class="stats-panel card empty-panel">
+    当前角色暂无统计报表视图
   </view>
 
   <bottom-nav current="stats"></bottom-nav>

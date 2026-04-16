@@ -72,7 +72,7 @@ Component({
     getRouteOptions(): Record<string, string> {
       const pages = getCurrentPages()
       const current = pages[pages.length - 1] as unknown as { options?: Record<string, string> }
-      return current?.options || {}
+      return (current && current.options) || {}
     },
     applyRouteParams() {
       const options = this.getRouteOptions()

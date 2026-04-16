@@ -1,0 +1,137 @@
+.search-row {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid #ececec;
+  border-radius: 12rpx;
+  box-sizing: border-box;
+  font-size: 26rpx;
+}
+
+.search-btn {
+  min-width: 120rpx;
+  background: #f57c00 !important;
+  color: #ffffff !important;
+}
+
+.filter-row {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 16rpx;
+  flex-wrap: wrap;
+}
+
+.filter-item {
+  padding: 8rpx 24rpx;
+  border-radius: 999rpx;
+  background: #f4f4f4;
+  color: #666666;
+  font-size: 24rpx;
+}
+
+.filter-active {
+  background: #fff3e8;
+  color: #f57c00;
+}
+
+.list-card {
+  margin-top: 14rpx;
+}
+
+.device-item {
+  margin-top: 16rpx;
+  border: 1rpx solid #ececec;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.device-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.device-name {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.device-status {
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.status-online {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-offline {
+  background: #f4f4f4;
+  color: #666666;
+}
+
+.status-error {
+  background: #fbe9e7;
+  color: #c62828;
+}
+
+.device-info {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #7a7a7a;
+}
+
+.device-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12rpx;
+}
+
+.secondary-btn {
+  background: #fff3e8 !important;
+  color: #f57c00 !important;
+}
+
+.bind-btn {
+  margin-top: 20rpx;
+  background: #f57c00 !important;
+  color: #ffffff !important;
+  font-size: 28rpx !important;
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.doc-item:last-child {
+  border-bottom: none;
+}
+
+.doc-title {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.doc-arrow {
+  color: #cccccc;
+  font-size: 26rpx;
+}
+
+.hint-text {
+  text-align: center;
+  color: #7a7a7a;
+  font-size: 26rpx;
+  padding: 40rpx 0;
+}

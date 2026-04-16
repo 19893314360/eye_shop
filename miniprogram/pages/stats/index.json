@@ -1,5 +1,7 @@
 {
-  "navigationBarTitleText": "统计",
+  "navigationBarTitleText": "统计报表",
+  "navigationBarBackgroundColor": "#f57c00",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
     "bottom-nav": "/components/bottom-nav/bottom-nav"
   }

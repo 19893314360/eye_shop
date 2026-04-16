@@ -1,0 +1,35 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">客户端小程序码</view>
+    <view class="store-name">{{storeName}}</view>
+  </view>
+
+  <view class="card qr-card">
+    <view class="qr-area">
+      <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+      <view wx:if="{{!loading}}" class="qr-placeholder">
+        <view class="qr-icon">📱</view>
+        <view class="qr-text">客户端小程序码</view>
+        <view class="qr-hint">需要后端接口生成真实小程序码</view>
+        <view class="qr-hint">当前为演示占位</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card action-card">
+    <view class="section-title">操作</view>
+    <button class="primary-btn" bindtap="saveToAlbum">保存到相册</button>
+    <button class="secondary-btn" bindtap="shareToFriend">分享给好友</button>
+    <button class="secondary-btn" bindtap="copyLink">复制分享文案</button>
+  </view>
+
+  <view class="card tips-card">
+    <view class="section-title">使用提示</view>
+    <block wx:for="{{tips}}" wx:key="index">
+      <view class="tip-item">
+        <view class="tip-dot"></view>
+        <view class="tip-text">{{item}}</view>
+      </view>
+    </block>
+  </view>
+</view>

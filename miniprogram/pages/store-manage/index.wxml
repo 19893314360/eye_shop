@@ -1,0 +1,44 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">门店管理</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="搜索门店名称、地址、店长"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+  </view>
+
+  <view class="card list-card">
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !stores.length}}" class="hint-text">暂无门店数据</view>
+
+    <block wx:for="{{stores}}" wx:key="id">
+      <view class="store-item">
+        <view class="store-header">
+          <view class="store-name">{{item.name}}</view>
+          <view class="store-status {{item.status === 'active' ? 'status-active' : 'status-inactive'}}">
+            {{item.status === 'active' ? '营业中' : '已停业'}}
+          </view>
+        </view>
+        <view class="store-info">{{item.address}}</view>
+        <view class="store-info">店长：{{item.managerName}} · 电话：{{item.phone}}</view>
+        <view class="store-stats">
+          <view class="stat-item">本月订单 <text class="stat-value">{{item.orderCount}}</text></view>
+          <view class="stat-item">本月营业额 <text class="stat-value">{{item.monthAmount}}</text></view>
+        </view>
+        <view class="store-actions">
+          <button size="mini" class="secondary-btn" data-id="{{item.id}}" bindtap="viewStore">详情</button>
+          <button size="mini" class="{{item.status === 'active' ? 'danger-btn' : 'primary-btn'}}" data-id="{{item.id}}" bindtap="toggleStoreStatus">
+            {{item.status === 'active' ? '停用' : '启用'}}
+          </button>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

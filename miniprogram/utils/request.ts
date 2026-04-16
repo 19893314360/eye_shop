@@ -107,7 +107,7 @@ async function requestByWx<T>(options: Required<Pick<AppRequestOptions, 'url' | 
 
 export async function request<T = unknown, TData = unknown>(rawOptions: AppRequestOptions<TData>): Promise<T> {
   const runtime = getRuntimeConfig()
-  const withAuth = rawOptions.withAuth ?? true
+  const withAuth = rawOptions.withAuth != null ? rawOptions.withAuth : true
   const method = rawOptions.method || 'GET'
   const timeout = rawOptions.timeout || ENV.requestTimeout
   if (!runtime.useMockApi && !runtime.apiBaseUrl && !/^https?:\/\//.test(rawOptions.url)) {

@@ -1,6 +1,6 @@
 export interface LoginRequest {
   code: string
-  desiredRole: UserRole
+  desiredRole?: UserRole
 }
 
 export interface LoginResult {

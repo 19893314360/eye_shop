@@ -95,6 +95,14 @@ Component({
     checkinList: [] as CheckinItem[],
     deviceList: [] as DeviceItem[],
     reminder: { ...defaultReminder },
+    // 新建方案
+    showCreateForm: false,
+    newPlan: {
+      customerName: '',
+      planName: '',
+      total: 12,
+    } as { customerName: string; planName: string; total: number },
+    creating: false,
   },
   lifetimes: {
     attached() {
@@ -112,7 +120,7 @@ Component({
     getRouteOptions(): Record<string, string> {
       const pages = getCurrentPages()
       const current = pages[pages.length - 1] as unknown as { options?: Record<string, string> }
-      return current?.options || {}
+      return (current && current.options) || {}
     },
     applyRouteParams() {
       const options = this.getRouteOptions()
@@ -276,6 +284,69 @@ Component({
       this.saveReminder(reminder)
       this.setData({ savingReminder: false })
       wx.showToast({ title: '提醒设置已保存', icon: 'success' })
+    },
+    // ===================== 新建方案 =====================
+    openCreateForm() {
+      this.setData({
+        showCreateForm: true,
+        newPlan: { customerName: '', planName: '', total: 12 },
+      })
+    },
+    closeCreateForm() {
+      this.setData({ showCreateForm: false })
+    },
+    onNewPlanCustomerInput(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
+      this.setData({ 'newPlan.customerName': e.detail.value || '' })
+    },
+    onNewPlanNameInput(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
+      this.setData({ 'newPlan.planName': e.detail.value || '' })
+    },
+    onNewPlanTotalChange(e: WechatMiniprogram.CustomEvent<{ value: number }>) {
+      this.setData({ 'newPlan.total': e.detail.value || 12 })
+    },
+    submitNewPlan() {
+      const { customerName, planName, total } = this.data.newPlan
+      if (!customerName.trim()) {
+        wx.showToast({ title: '请输入客户姓名', icon: 'none' })
+        return
+      }
+      if (!planName.trim()) {
+        wx.showToast({ title: '请输入方案名称', icon: 'none' })
+        return
+      }
+      if (total < 1) {
+        wx.showToast({ title: '训练次数至少为1', icon: 'none' })
+        return
+      }
+      this.setData({ creating: true })
+      const newId = 'TP-' + String(Date.now()).slice(-6)
+      const newItem: TrainingPlanItem = {
+        id: newId,
+        customerName: customerName.trim(),
+        planName: planName.trim(),
+        progress: 0,
+        total,
+        status: 'ongoing',
+      }
+      const planList = [newItem, ...this.data.planList]
+      this.savePlanList(planList)
+      // 同步创建核销记录
+      const newCheckin: CheckinItem = {
+        id: 'TC-' + String(Date.now()).slice(-6),
+        customerName: customerName.trim(),
+        checked: 0,
+        total,
+      }
+      const checkinList = [newCheckin, ...this.data.checkinList]
+      this.saveCheckinList(checkinList)
+      this.setData({
+        planList,
+        checkinList,
+        showCreateForm: false,
+        creating: false,
+        newPlan: { customerName: '', planName: '', total: 12 },
+      })
+      wx.showToast({ title: '方案创建成功', icon: 'success' })
     },
   },
 })

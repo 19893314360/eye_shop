@@ -1,0 +1,62 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">设备管理</view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="搜索设备名称、门店、序列号"
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <button class="search-btn" size="mini" bindtap="onSearch">搜索</button>
+    </view>
+    <view class="filter-row">
+      <block wx:for="{{typeOptions}}" wx:key="key">
+        <view
+          class="filter-item {{filterType === item.key ? 'filter-active' : ''}}"
+          data-type="{{item.key}}"
+          bindtap="onTypeFilter"
+        >
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 设备列表 -->
+  <view class="card list-card">
+    <view class="section-title">设备列表</view>
+    <view wx:if="{{loading}}" class="hint-text">加载中...</view>
+    <view wx:if="{{!loading && !filteredDevices.length}}" class="hint-text">暂无设备数据</view>
+
+    <block wx:for="{{filteredDevices}}" wx:key="id">
+      <view class="device-item">
+        <view class="device-header">
+          <view class="device-name">{{item.name}}</view>
+          <view class="device-status status-{{item.status}}">{{statusLabels[item.status]}}</view>
+        </view>
+        <view class="device-info">{{typeLabels[item.type]}} · {{item.model}}</view>
+        <view class="device-info">{{item.storeName}} · SN: {{item.sn}}</view>
+        <view class="device-info">最后活跃：{{item.lastActive}}</view>
+        <view class="device-actions">
+          <button size="mini" class="secondary-btn" data-id="{{item.id}}" bindtap="viewDevice">详情</button>
+        </view>
+      </view>
+    </block>
+
+    <button wx:if="{{role === 'manager'}}" class="bind-btn" bindtap="bindDevice">+ 绑定新设备</button>
+  </view>
+
+  <!-- 设备支持文档 -->
+  <view class="card">
+    <view class="section-title">设备支持文档</view>
+    <block wx:for="{{supportDocs}}" wx:key="title">
+      <view class="doc-item" data-title="{{item.title}}" bindtap="viewSupportDoc">
+        <view class="doc-title">{{item.title}}</view>
+        <view class="doc-arrow">></view>
+      </view>
+    </block>
+  </view>
+</view>

@@ -74,7 +74,7 @@ Component({
     getOrderIdFromRoute(): string {
       const pages = getCurrentPages()
       const current = pages[pages.length - 1] as unknown as { options?: Record<string, string> }
-      return current?.options?.orderId || ''
+      return (current && current.options && current.options.orderId) || ''
     },
     async ensureAccess(): Promise<boolean> {
       try {

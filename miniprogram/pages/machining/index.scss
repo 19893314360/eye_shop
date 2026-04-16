@@ -1,0 +1,157 @@
+.page {
+  padding-bottom: 32rpx;
+}
+
+.tabs {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 8rpx;
+  background: #f5f6f8;
+}
+
+.tab-item--active {
+  color: #fff;
+  background: #f57c00;
+}
+
+.list-card {
+  margin-top: 20rpx;
+}
+
+.item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.order-no {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.status {
+  font-size: 24rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.status--pending {
+  color: #ff9800;
+  background: #fff3e0;
+}
+
+.status--processing {
+  color: #1976d2;
+  background: #e3f2fd;
+}
+
+.status--done {
+  color: #388e3c;
+  background: #e8f5e9;
+}
+
+.main {
+  font-size: 28rpx;
+  color: #555;
+  margin-bottom: 8rpx;
+}
+
+.meta {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+}
+
+.note {
+  color: #f57c00;
+  margin-bottom: 4rpx;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin: 16rpx 0;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 16rpx;
+  background: #e8e8e8;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f57c00, #ff9800);
+  border-radius: 8rpx;
+  transition: width 0.3s;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #f57c00;
+  font-weight: 600;
+  min-width: 72rpx;
+  text-align: right;
+}
+
+.actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.primary-btn {
+  background: #f57c00;
+  color: #fff;
+  border: none;
+  font-size: 24rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 8rpx;
+
+  &::after {
+    border: none;
+  }
+}
+
+.secondary-btn {
+  background: #fff;
+  color: #666;
+  border: 1rpx solid #ddd;
+  font-size: 24rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 8rpx;
+
+  &::after {
+    border: none;
+  }
+}
+
+.hint-text {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 48rpx 0;
+}

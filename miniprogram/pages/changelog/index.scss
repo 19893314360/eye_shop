@@ -1,0 +1,50 @@
+.changelog-card {
+  margin-top: 14rpx;
+}
+
+.version-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.version-tag {
+  display: inline-block;
+  padding: 4rpx 20rpx;
+  border-radius: 8rpx;
+  background: #f57c00;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.version-date {
+  font-size: 24rpx;
+  color: #7a7a7a;
+}
+
+.highlight-list {
+  margin-top: 16rpx;
+}
+
+.highlight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: 8rpx 0;
+}
+
+.highlight-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #f57c00;
+  margin-top: 12rpx;
+  flex-shrink: 0;
+}
+
+.highlight-text {
+  font-size: 26rpx;
+  color: #333333;
+  line-height: 1.6;
+}

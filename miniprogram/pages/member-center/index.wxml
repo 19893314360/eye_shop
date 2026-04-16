@@ -1,0 +1,112 @@
+<view class="page">
+  <!-- 会员卡片 -->
+  <view class="member-card">
+    <view class="card-header">
+      <view class="level-badge">{{memberLevel}}</view>
+      <view class="level-name">{{memberLevel}}会员</view>
+    </view>
+    <view class="card-stats">
+      <view class="stat-item">
+        <view class="stat-value">{{balance}}</view>
+        <view class="stat-label">账户余额(元)</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-value">{{points}}</view>
+        <view class="stat-label">可用积分</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-value">{{couponCount}}</view>
+        <view class="stat-label">优惠券</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <block wx:for="{{tabOptions}}" wx:key="key">
+      <view
+        class="tab-item {{currentTab === item.key ? 'tab-active' : ''}}"
+        data-tab="{{item.key}}"
+        bindtap="onTabChange"
+      >
+        {{item.label}}
+      </view>
+    </block>
+  </view>
+
+  <!-- 余额明细 -->
+  <view wx:if="{{currentTab === 'balance'}}" class="content-section">
+    <view class="section-title">余额明细</view>
+    <view wx:if="{{!balanceList.length}}" class="empty-hint">暂无余额变动记录</view>
+    <block wx:for="{{balanceList}}" wx:key="id">
+      <view class="record-item">
+        <view class="record-info">
+          <view class="record-title">{{item.title}}</view>
+          <view class="record-time">{{item.timeText}}</view>
+        </view>
+        <view class="record-amount {{item.amount >= 0 ? 'income' : 'expense'}}">
+          {{item.amount >= 0 ? '+' : ''}}{{item.amount}}
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 积分明细 -->
+  <view wx:if="{{currentTab === 'points'}}" class="content-section">
+    <view class="section-title">积分明细</view>
+    <view wx:if="{{!pointsList.length}}" class="empty-hint">暂无积分变动记录</view>
+    <block wx:for="{{pointsList}}" wx:key="id">
+      <view class="record-item">
+        <view class="record-info">
+          <view class="record-title">{{item.title}}</view>
+          <view class="record-time">{{item.timeText}}</view>
+        </view>
+        <view class="record-amount {{item.amount >= 0 ? 'income' : 'expense'}}">
+          {{item.amount >= 0 ? '+' : ''}}{{item.amount}}
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 优惠券 -->
+  <view wx:if="{{currentTab === 'coupons'}}" class="content-section">
+    <view class="coupon-tabs">
+      <view
+        class="coupon-tab {{couponTab === 'available' ? 'coupon-tab-active' : ''}}"
+        data-tab="available"
+        bindtap="onCouponTabChange"
+      >
+        可用({{availableCoupons.length}})
+      </view>
+      <view
+        class="coupon-tab {{couponTab === 'expired' ? 'coupon-tab-active' : ''}}"
+        data-tab="expired"
+        bindtap="onCouponTabChange"
+      >
+        已过期({{expiredCoupons.length}})
+      </view>
+    </view>
+
+    <view wx:if="{{couponTab === 'available' && !availableCoupons.length}}" class="empty-hint">暂无可用优惠券</view>
+    <view wx:if="{{couponTab === 'expired' && !expiredCoupons.length}}" class="empty-hint">暂无已过期优惠券</view>
+
+    <block wx:for="{{couponTab === 'available' ? availableCoupons : expiredCoupons}}" wx:key="id">
+      <view class="coupon-card {{item.used ? 'coupon-used' : ''}}">
+        <view class="coupon-left">
+          <view class="coupon-amount">
+            <text class="coupon-symbol">¥</text>{{item.value}}
+          </view>
+          <view class="coupon-condition">{{item.condition}}</view>
+        </view>
+        <view class="coupon-right">
+          <view class="coupon-name">{{item.name}}</view>
+          <view class="coupon-expire">有效期至 {{item.expireDate}}</view>
+          <view wx:if="{{!item.used}}" class="coupon-use-btn" data-id="{{item.id}}" bindtap="useCoupon">立即使用</view>
+          <view wx:else class="coupon-used-tag">已使用</view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

@@ -23,7 +23,21 @@
     "pages/delivery/index",
     "pages/inventory-check/index",
     "pages/transfer-out/index",
-    "pages/transfer-in/index"
+    "pages/transfer-in/index",
+    "pages/member-center/index",
+    "pages/after-sale-apply/index",
+    "pages/message-center/index",
+    "pages/faq/index",
+    "pages/customer-service/index",
+    "pages/profile/index",
+    "pages/store-manage/index",
+    "pages/staff-manage/index",
+    "pages/changelog/index",
+    "pages/device-manage/index",
+    "pages/tutorial/index",
+    "pages/machining/index",
+    "pages/price-list/index",
+    "pages/mini-qrcode/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",

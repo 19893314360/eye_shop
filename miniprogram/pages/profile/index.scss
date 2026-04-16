@@ -1,0 +1,116 @@
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #f57c00;
+  color: #ffffff;
+  font-size: 36rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-name {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.header-role {
+  font-size: 24rpx;
+  color: #7a7a7a;
+  margin-top: 4rpx;
+}
+
+.role-btn {
+  background: #fff3e8 !important;
+  color: #f57c00 !important;
+  font-size: 22rpx !important;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edit-link {
+  color: #1a73e8;
+  font-size: 24rpx;
+  font-weight: 400;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.field-row:last-child {
+  border-bottom: none;
+}
+
+.field-label {
+  color: #7a7a7a;
+  font-size: 26rpx;
+  flex-shrink: 0;
+  width: 160rpx;
+}
+
+.field-value {
+  color: #333333;
+  font-size: 26rpx;
+  text-align: right;
+  flex: 1;
+}
+
+.field-input {
+  flex: 1;
+  text-align: right;
+  font-size: 26rpx;
+  color: #333333;
+  border: 1rpx solid #f57c00;
+  border-radius: 8rpx;
+  padding: 8rpx 16rpx;
+}
+
+.action-row {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  font-size: 28rpx !important;
+}
+
+.cancel-btn {
+  background: #f4f4f4 !important;
+  color: #666666 !important;
+}
+
+.save-btn {
+  background: #f57c00 !important;
+  color: #ffffff !important;
+}
+
+.hint-text {
+  text-align: center;
+  color: #7a7a7a;
+  font-size: 26rpx;
+  padding: 60rpx 0;
+}

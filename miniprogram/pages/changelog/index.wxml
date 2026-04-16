@@ -1,0 +1,22 @@
+<view class="page">
+  <view class="card">
+    <view class="section-title">更新日志</view>
+  </view>
+
+  <block wx:for="{{changelogs}}" wx:key="version">
+    <view class="card changelog-card">
+      <view class="version-header">
+        <view class="version-tag">{{item.version}}</view>
+        <view class="version-date">{{item.date}}</view>
+      </view>
+      <view class="highlight-list">
+        <block wx:for="{{item.highlights}}" wx:for-item="h" wx:key="*this">
+          <view class="highlight-item">
+            <view class="highlight-dot"></view>
+            <view class="highlight-text">{{h}}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,110 @@
+.search-row {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid #ececec;
+  border-radius: 12rpx;
+  box-sizing: border-box;
+  font-size: 26rpx;
+}
+
+.search-btn {
+  min-width: 120rpx;
+  background: #f57c00 !important;
+  color: #ffffff !important;
+}
+
+.list-card {
+  margin-top: 14rpx;
+}
+
+.store-item {
+  margin-top: 16rpx;
+  border: 1rpx solid #ececec;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.store-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.store-name {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.store-status {
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.status-active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-inactive {
+  background: #fbe9e7;
+  color: #c62828;
+}
+
+.store-info {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #7a7a7a;
+}
+
+.store-stats {
+  display: flex;
+  gap: 32rpx;
+  margin-top: 12rpx;
+}
+
+.stat-item {
+  font-size: 24rpx;
+  color: #7a7a7a;
+}
+
+.stat-value {
+  color: #333333;
+  font-weight: 600;
+}
+
+.store-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 16rpx;
+  justify-content: flex-end;
+}
+
+.primary-btn {
+  background: #f57c00 !important;
+  color: #ffffff !important;
+}
+
+.secondary-btn {
+  background: #fff3e8 !important;
+  color: #f57c00 !important;
+}
+
+.danger-btn {
+  background: #fbe9e7 !important;
+  color: #c62828 !important;
+}
+
+.hint-text {
+  text-align: center;
+  color: #7a7a7a;
+  font-size: 26rpx;
+  padding: 40rpx 0;
+}
