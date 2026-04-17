@@ -37,7 +37,12 @@
     "pages/tutorial/index",
     "pages/machining/index",
     "pages/price-list/index",
-    "pages/mini-qrcode/index"
+    "pages/mini-qrcode/index",
+    "pages/recharge/index",
+    "pages/sales-return/index",
+    "pages/sales-exchange/index",
+    "pages/consignment/index",
+    "pages/expense-claim/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",

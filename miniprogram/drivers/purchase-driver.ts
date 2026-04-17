@@ -1,4 +1,7 @@
+import { getRuntimeConfig } from '../services/runtime-config'
+import { http } from '../utils/request'
 import { readNumber, readString } from './codec'
+import { buildRequestPayload } from './payload'
 import { PurchaseRecord, PurchaseType } from '../types/purchase'
 
 export interface PurchasePayload {
@@ -75,6 +78,19 @@ function toPurchaseRecord(raw: unknown): PurchaseRecord {
   }
 }
 
+function toCreatePurchaseDTO(payload: PurchasePayload): Record<string, unknown> {
+  return buildRequestPayload([
+    { snake: 'record_type', camel: 'type', value: payload.type },
+    { snake: 'item_name', camel: 'itemName', value: payload.itemName },
+    { snake: 'sku', camel: 'sku', value: payload.sku },
+    { snake: 'qty', camel: 'qty', value: payload.qty },
+    { snake: 'unit_cost', camel: 'unitCost', value: payload.unitCost },
+    { snake: 'supplier', camel: 'supplier', value: payload.supplier },
+    { snake: 'operator', camel: 'operator', value: payload.operator },
+    { snake: 'note', camel: 'note', value: payload.note },
+  ])
+}
+
 function readRecords(): PurchaseRecord[] {
   const raw = wx.getStorageSync(PURCHASE_STORAGE_KEY)
   if (!Array.isArray(raw)) {
@@ -89,10 +105,27 @@ function saveRecords(list: PurchaseRecord[]) {
 }
 
 export async function listPurchaseRecordsDriver(): Promise<PurchaseRecord[]> {
+  const runtime = getRuntimeConfig()
+  if (!runtime.useMockApi) {
+    const raw = await http.get<unknown[]>('/purchase-records')
+    if (!Array.isArray(raw)) {
+      return []
+    }
+    return raw
+      .map((item) => toPurchaseRecord(item))
+      .sort((a, b) => b.createdAt - a.createdAt)
+  }
+
   return readRecords().sort((a, b) => b.createdAt - a.createdAt)
 }
 
 export async function createPurchaseRecordDriver(payload: PurchasePayload): Promise<PurchaseRecord> {
+  const runtime = getRuntimeConfig()
+  if (!runtime.useMockApi) {
+    const raw = await http.post<unknown, Record<string, unknown>>('/purchase-records', toCreatePurchaseDTO(payload))
+    return toPurchaseRecord(raw)
+  }
+
   const list = readRecords()
   const next: PurchaseRecord = {
     id: `PO-${Date.now()}`,

@@ -209,6 +209,8 @@ const customerHomeSections: ModuleSection[] = [
     items: [
       createModule('余额查询', '余', 'orange'),
       createModule('积分明细', '积', 'green'),
+      createModule('会员充值', '充', 'orange'),
+      createModule('积分兑换', '换', 'green'),
       createModule('消息中心', '信', 'blue'),
       createModule('常见问题', '问', 'cyan'),
     ],
@@ -232,8 +234,7 @@ const salesHomeSections: ModuleSection[] = [
   {
     title: '会员服务',
     items: [
-      createModule('会员充值', '充', 'green'),
-      createModule('积分兑换', '积', 'blue'),
+      createModule('积分兑换记录', '积', 'blue'),
       createModule('售后回访', '访', 'green', '3'),
       createModule('处理复查', '复', 'lime', '7'),
     ],
@@ -272,6 +273,13 @@ const customerWorkbenchSections: ModuleSection[] = [
       createModule('售后申请', '后', 'pink'),
     ],
   },
+  {
+    title: '会员服务',
+    items: [
+      createModule('会员充值', '充', 'orange'),
+      createModule('积分兑换', '换', 'green'),
+    ],
+  },
 ]
 
 const salesWorkbenchSections: ModuleSection[] = [
@@ -281,8 +289,7 @@ const salesWorkbenchSections: ModuleSection[] = [
       createModule('服务预约', '约', 'blue'),
       createModule('验光单', '验', 'blue'),
       createModule('配镜单', '镜', 'blue', '1138'),
-      createModule('会员充值', '充', 'cyan'),
-      createModule('积分兑换', '积', 'cyan'),
+      createModule('积分兑换记录', '积', 'cyan'),
       createModule('销售退货', '退', 'cyan'),
       createModule('销售换货', '换', 'cyan'),
       createModule('物品寄存', '寄', 'blue'),

@@ -1,0 +1,113 @@
+<view class="page">
+  <!-- Step 1: 选择充值金额 -->
+  <block wx:if="{{step === 'select'}}">
+    <view class="card balance-card">
+      <view class="balance-label">当前余额</view>
+      <view class="balance-value">￥{{currentBalance}}</view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">选择充值档位</view>
+      <view class="package-grid">
+        <block wx:for="{{rechargePackages}}" wx:key="amount">
+          <view
+            class="package-item {{selectedAmount === item.amount ? 'package-active' : ''}}"
+            data-amount="{{item.amount}}"
+            bindtap="onPackageSelect"
+          >
+            <view class="package-amount">{{item.label}}</view>
+            <view wx:if="{{item.bonus > 0}}" class="package-bonus">送{{item.bonus}}元</view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">自定义金额</view>
+      <view class="custom-row">
+        <text class="custom-prefix">￥</text>
+        <input
+          class="custom-input"
+          type="digit"
+          placeholder="请输入金额"
+          value="{{customAmount}}"
+          bindinput="onCustomAmountInput"
+        />
+      </view>
+      <view wx:if="{{bonus > 0 && !selectedAmount}}" class="bonus-hint">充值此金额赠送 {{bonus}} 元</view>
+    </view>
+
+    <view class="card rules-card">
+      <view class="section-title">充值优惠规则</view>
+      <view class="rule-item">
+        <view class="rule-dot"></view>
+        <view class="rule-text">充 500 送 30，充 1000 送 80</view>
+      </view>
+      <view class="rule-item">
+        <view class="rule-dot"></view>
+        <view class="rule-text">充 2000 送 200，充 5000 送 600</view>
+      </view>
+      <view class="rule-item">
+        <view class="rule-dot"></view>
+        <view class="rule-text">赠送金额直接计入账户余额</view>
+      </view>
+      <view class="rule-item">
+        <view class="rule-dot"></view>
+        <view class="rule-text">充值金额不可提现，仅限消费使用</view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">备注（可选）</view>
+      <textarea class="field-textarea" maxlength="60" placeholder="如：生日充值" value="{{remark}}" bindinput="onRemarkInput" />
+    </view>
+
+    <button class="primary-btn" bindtap="goConfirm">下一步</button>
+  </block>
+
+  <!-- Step 2: 确认充值 -->
+  <block wx:if="{{step === 'confirm'}}">
+    <view class="card confirm-card">
+      <view class="section-title">确认充值信息</view>
+      <view class="confirm-row">
+        <view class="confirm-label">充值金额</view>
+        <view class="confirm-value accent">￥{{selectedAmount || customAmount}}</view>
+      </view>
+      <view class="confirm-row">
+        <view class="confirm-label">赠送金额</view>
+        <view class="confirm-value bonus">￥{{bonus}}</view>
+      </view>
+      <view class="confirm-row">
+        <view class="confirm-label">实际到账</view>
+        <view class="confirm-value accent">￥{{(selectedAmount || customAmount) * 1 + bonus * 1}}</view>
+      </view>
+      <view class="confirm-row">
+        <view class="confirm-label">充值后余额</view>
+        <view class="confirm-value">￥{{currentBalance + (selectedAmount || customAmount) * 1 + bonus * 1}}</view>
+      </view>
+    </view>
+
+    <view class="action-row">
+      <button class="secondary-btn" bindtap="goBack">返回修改</button>
+      <button class="primary-btn" loading="{{submitting}}" bindtap="submitRecharge">确认充值</button>
+    </view>
+  </block>
+
+  <!-- Step 3: 充值成功 -->
+  <block wx:if="{{step === 'done'}}">
+    <view class="card done-card">
+      <view class="done-icon">✓</view>
+      <view class="done-title">充值成功</view>
+      <view wx:if="{{lastRecord}}" class="done-info">
+        <view class="done-amount">到账 ￥{{lastRecord.amount}}</view>
+        <view class="done-time">{{lastRecord.timeText}}</view>
+      </view>
+      <view class="done-balance">当前余额 ￥{{currentBalance}}</view>
+    </view>
+
+    <view class="action-row">
+      <button class="secondary-btn" bindtap="goRechargeAgain">继续充值</button>
+      <button class="primary-btn" bindtap="goMemberCenter">查看余额</button>
+    </view>
+  </block>
+</view>

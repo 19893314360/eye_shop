@@ -21,6 +21,7 @@
         <view class="stat-label">优惠券</view>
       </view>
     </view>
+    <button wx:if="{{isCustomer}}" class="recharge-btn" bindtap="goRecharge">充值</button>
   </view>
 
   <!-- Tab 切换 -->
@@ -68,6 +69,30 @@
         </view>
       </view>
     </block>
+
+    <!-- 积分兑换（仅客户端可见） -->
+    <view wx:if="{{isCustomer}}" class="exchange-section">
+      <view class="section-title-row">
+        <view class="exchange-hint">积分兑换</view>
+        <view class="exchange-toggle" bindtap="toggleExchange">{{showExchange ? '收起' : '展开'}}</view>
+      </view>
+      <view wx:if="{{showExchange}}" class="exchange-list">
+        <block wx:for="{{exchangeItems}}" wx:key="id">
+          <view class="exchange-item">
+            <view class="exchange-info">
+              <view class="exchange-name">{{item.name}}</view>
+              <view class="exchange-desc">{{item.desc}}</view>
+              <view class="exchange-cost">{{item.cost}}积分</view>
+            </view>
+            <view
+              class="exchange-btn {{points < item.cost ? 'exchange-btn-disabled' : ''}}"
+              data-id="{{item.id}}"
+              bindtap="doExchange"
+            >兑换</view>
+          </view>
+        </block>
+      </view>
+    </view>
   </view>
 
   <!-- 优惠券 -->

@@ -94,5 +94,10 @@ Component({
         url: '/pages/member-query/index',
       })
     },
+    onTabChange(e: WechatMiniprogram.TouchEvent) {
+      const tab = e.currentTarget.dataset.tab as 'optometry' | 'biometric' | 'screening'
+      if (!tab || tab === this.data.currentTab) return
+      this.setData({ currentTab: tab })
+    },
   },
 })

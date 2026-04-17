@@ -1,3 +1,4 @@
+import { ensureAuthReady } from '../../services/auth-session'
 import { formatTime } from '../../utils/util'
 
 type MemberTab = 'balance' | 'points' | 'coupons'
@@ -27,6 +28,22 @@ interface Coupon {
   expireDate: string
   used: boolean
 }
+
+interface ExchangeItem {
+  id: string
+  name: string
+  cost: number
+  type: 'coupon' | 'gift'
+  desc: string
+}
+
+const exchangeItems: ExchangeItem[] = [
+  { id: 'E001', name: '10元优惠券', cost: 50, type: 'coupon', desc: '满100可用' },
+  { id: 'E002', name: '30元优惠券', cost: 120, type: 'coupon', desc: '满200可用' },
+  { id: 'E003', name: '清洁护理套装', cost: 200, type: 'gift', desc: '镜片清洁套装' },
+  { id: 'E004', name: '50元优惠券', cost: 250, type: 'coupon', desc: '满300可用' },
+  { id: 'E005', name: '护眼台灯', cost: 500, type: 'gift', desc: 'LED护眼小台灯' },
+]
 
 const STORAGE_BALANCE = 'yanjing-member-balance'
 const STORAGE_POINTS = 'yanjing-member-points'
@@ -67,6 +84,7 @@ function getDefaultCoupons(): Coupon[] {
 
 Component({
   data: {
+    role: 'sales' as UserRole,
     currentTab: 'balance' as MemberTab,
     tabOptions,
     couponTab: 'available' as CouponTab,
@@ -78,21 +96,34 @@ Component({
     pointsList: [] as PointsRecord[],
     availableCoupons: [] as Coupon[],
     expiredCoupons: [] as Coupon[],
+    exchangeItems,
+    isCustomer: false,
+    showExchange: false,
   },
 
   lifetimes: {
     attached() {
+      this.initRole()
       this.applyRouteParams()
       this.loadData()
     },
   },
   pageLifetimes: {
     show() {
+      this.initRole()
       this.applyRouteParams()
       this.loadData()
     },
   },
   methods: {
+    async initRole() {
+      try {
+        const state = await ensureAuthReady()
+        this.setData({ role: state.role, isCustomer: state.role === 'customer' })
+      } catch {
+        // ignore
+      }
+    },
     applyRouteParams() {
       const pages = getCurrentPages()
       const current = pages[pages.length - 1] as unknown as { options: Record<string, string> }
@@ -196,6 +227,53 @@ Component({
             this.loadData()
             wx.showToast({ title: '优惠券已使用', icon: 'success' })
           }
+        },
+      })
+    },
+    goRecharge() {
+      wx.navigateTo({ url: '/pages/recharge/index' })
+    },
+    toggleExchange() {
+      this.setData({ showExchange: !this.data.showExchange })
+    },
+    doExchange(e: WechatMiniprogram.TouchEvent) {
+      const id = e.currentTarget.dataset.id as string
+      const item = exchangeItems.find((i) => i.id === id)
+      if (!item) return
+      if (this.data.points < item.cost) {
+        wx.showToast({ title: '积分不足', icon: 'none' })
+        return
+      }
+      wx.showModal({
+        title: '确认兑换',
+        content: `使用${item.cost}积分兑换「${item.name}」？`,
+        success: (res) => {
+          if (!res.confirm) return
+          let pointsRecords: PointsRecord[] = wx.getStorageSync(STORAGE_POINTS) || []
+          const now = Date.now()
+          pointsRecords.unshift({
+            id: 'PE-' + String(now).slice(-6),
+            title: '\u79EF\u5206\u5151\u6362\uFF1A' + item.name,
+            amount: -item.cost,
+            time: now,
+            timeText: formatTime(new Date(now)),
+          })
+          wx.setStorageSync(STORAGE_POINTS, pointsRecords)
+          if (item.type === 'coupon') {
+            const couponValue = item.id === 'E001' ? 10 : item.id === 'E002' ? 30 : 50
+            let coupons: Coupon[] = wx.getStorageSync(STORAGE_COUPONS) || []
+            coupons.unshift({
+              id: 'CE-' + String(now).slice(-6),
+              name: item.name,
+              value: couponValue,
+              condition: item.desc,
+              expireDate: new Date(now + 30 * 86400000).toISOString().slice(0, 10),
+              used: false,
+            })
+            wx.setStorageSync(STORAGE_COUPONS, coupons)
+          }
+          this.loadData()
+          wx.showToast({ title: '兑换成功', icon: 'success' })
         },
       })
     },

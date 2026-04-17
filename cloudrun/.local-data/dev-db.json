@@ -1,0 +1,234 @@
+{
+  "meta": {
+    "version": 1,
+    "updatedAt": 1776392793326
+  },
+  "counters": {
+    "member": 1002,
+    "order": 1003,
+    "vision": 1002,
+    "purchase": 1003,
+    "appointment": 1003,
+    "afterSaleApply": 1001
+  },
+  "members": [
+    {
+      "id": "MEM-1001",
+      "name": "阿依古丽",
+      "mobile": "13800001001",
+      "gender": "female",
+      "birthday": "1995-08-19",
+      "note": "首次配镜客户",
+      "createdAt": 1775787993259
+    },
+    {
+      "id": "MEM-1002",
+      "name": "马磊",
+      "mobile": "13800001002",
+      "gender": "male",
+      "birthday": "1992-03-12",
+      "note": "复购会员",
+      "createdAt": 1775960793259
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-1001",
+      "orderNo": "SO202604160001",
+      "memberId": "MEM-1001",
+      "memberName": "阿依古丽",
+      "orderType": "normal",
+      "itemName": "超薄镜片 1.67",
+      "quantity": 1,
+      "unitPrice": 399,
+      "amount": 399,
+      "status": "awaiting_payment",
+      "note": "",
+      "createdAt": 1776385593259
+    },
+    {
+      "id": "ORD-1002",
+      "orderNo": "SO202604160002",
+      "memberId": "MEM-1002",
+      "memberName": "马磊",
+      "orderType": "optometry",
+      "itemName": "验光开单套餐",
+      "quantity": 1,
+      "unitPrice": 268,
+      "amount": 268,
+      "status": "ready_delivery",
+      "note": "",
+      "createdAt": 1776378393259,
+      "paidAt": 1776381993259,
+      "payChannel": "wechat"
+    },
+    {
+      "id": "ORD-1003",
+      "orderNo": "SO202604150003",
+      "memberId": "MEM-1001",
+      "memberName": "阿依古丽",
+      "orderType": "normal",
+      "itemName": "儿童防控镜片",
+      "quantity": 1,
+      "unitPrice": 612.44,
+      "amount": 612.44,
+      "status": "completed",
+      "note": "",
+      "createdAt": 1776306393259,
+      "paidAt": 1776309993259,
+      "deliveredAt": 1776320793259,
+      "payChannel": "cash"
+    }
+  ],
+  "visionRecords": [
+    {
+      "id": "VR-1001",
+      "memberId": "MEM-1001",
+      "examDate": "2026-04-10",
+      "rightEye": "S -1.75 C -0.50 A 180",
+      "leftEye": "S -1.50 C -0.25 A 170",
+      "pd": "63",
+      "suggestion": "建议防蓝光镜片，连续用眼 40 分钟休息 5 分钟。",
+      "doctor": "吴家伟"
+    },
+    {
+      "id": "VR-1002",
+      "memberId": "MEM-1002",
+      "examDate": "2026-04-08",
+      "rightEye": "S -2.25 C -0.75 A 175",
+      "leftEye": "S -2.00 C -0.50 A 165",
+      "pd": "62",
+      "suggestion": "建议复查周期 3 个月，增加户外活动。",
+      "doctor": "店长"
+    }
+  ],
+  "purchaseRecords": [
+    {
+      "id": "PO-1001",
+      "type": "order",
+      "itemName": "超薄镜片 1.67",
+      "sku": "LENS-001",
+      "qty": 50,
+      "unitCost": 128,
+      "supplier": "华光供应链",
+      "operator": "店长",
+      "note": "",
+      "createdAt": 1776133593259
+    },
+    {
+      "id": "PO-1002",
+      "type": "inbound",
+      "itemName": "金属镜架 M10",
+      "sku": "FRAME-010",
+      "qty": 20,
+      "unitCost": 62,
+      "supplier": "伊宁仓",
+      "operator": "吴家伟",
+      "note": "",
+      "createdAt": 1776219993259
+    },
+    {
+      "id": "PO-1003",
+      "type": "return",
+      "itemName": "防蓝光镜片 1.60",
+      "sku": "LENS-022",
+      "qty": 4,
+      "unitCost": 78,
+      "supplier": "华光供应链",
+      "operator": "店长",
+      "note": "批次边缘瑕疵",
+      "createdAt": 1776306393259
+    }
+  ],
+  "appointments": [
+    {
+      "id": "APT-1003",
+      "customerName": "??????",
+      "mobile": "19911112222",
+      "serviceType": "recheck",
+      "date": "2026-04-21",
+      "time": "14:40",
+      "note": "appointment-check",
+      "status": "done",
+      "createdAt": 1776392793303,
+      "arrivedAt": 1776392793307
+    },
+    {
+      "id": "APT-1001",
+      "customerName": "阿依古丽",
+      "mobile": "13800001001",
+      "serviceType": "optometry",
+      "date": "2026-04-18",
+      "time": "10:30",
+      "note": "初次验光咨询",
+      "status": "pending",
+      "createdAt": 1776381993259
+    },
+    {
+      "id": "APT-1002",
+      "customerName": "马磊",
+      "mobile": "13800001002",
+      "serviceType": "recheck",
+      "date": "2026-04-17",
+      "time": "15:00",
+      "note": "复查镜片适配情况",
+      "status": "done",
+      "createdAt": 1776306393259,
+      "arrivedAt": 1776309993259
+    }
+  ],
+  "afterSaleRecords": [
+    {
+      "orderId": "ORD-1003",
+      "followed": true,
+      "rechecked": true,
+      "updatedAt": 1776392793326
+    }
+  ],
+  "afterSaleApplies": [
+    {
+      "id": "AS-1001",
+      "orderId": "ORD-1003",
+      "type": "repair",
+      "reason": "????",
+      "remark": "after-sale-check",
+      "phone": "13800000001",
+      "images": [
+        "a.png",
+        "b.png"
+      ],
+      "status": "completed",
+      "applicant": "张先生",
+      "createdAt": 1776392793317
+    }
+  ],
+  "settings": {
+    "system": {
+      "notifyTakeaway": true,
+      "notifyRecheck": true,
+      "notifyTraining": true
+    },
+    "notice": {
+      "content": "点击查看系统更新公告（2026-03-12）",
+      "updatedAt": 1776392793259
+    },
+    "print": {
+      "printTicket": true,
+      "printOrder": true,
+      "printDelivery": false,
+      "ticketContent": "店铺名\\n日期：{{date}}\\n商品：{{itemName}}\\n金额：￥{{amount}}\\n感谢惠顾！",
+      "orderContent": "配镜单\\n客户：{{customerName}}\\n右眼：{{rightEye}}\\n左眼：{{leftEye}}\\nPD：{{pd}}",
+      "deliveryContent": "取件通知\\n客户：{{customerName}}\\n订单号：{{orderNo}}\\n商品：{{itemName}}\\n请凭此单到店取件"
+    },
+    "rate": {
+      "merchantNo": "MCH_XJ001",
+      "rate": "0.3%",
+      "autoSettle": true
+    },
+    "permission": {
+      "salesCanPurchase": true,
+      "salesCanRateView": true,
+      "customerCanAfterSale": true
+    }
+  }
+}

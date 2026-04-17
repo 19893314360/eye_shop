@@ -171,4 +171,16 @@ export const http = {
       method: 'POST',
     })
   },
+  put<T = unknown, TData = unknown>(
+    url: string,
+    data?: TData,
+    options: Omit<AppRequestOptions<TData>, 'url' | 'method' | 'data'> = {}
+  ) {
+    return request<T, TData>({
+      ...options,
+      url,
+      data,
+      method: 'PUT',
+    })
+  },
 }

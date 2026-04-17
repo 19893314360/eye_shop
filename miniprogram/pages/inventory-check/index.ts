@@ -1,34 +1,18 @@
 import { ensureAuthReady } from '../../services/auth-session'
+import {
+  createInventoryCheckTask,
+  listInventoryCheckItems,
+  resolveInventoryCheckItem,
+  submitInventoryCheckItem,
+  submitInventoryCheckItemsBatch,
+} from '../../services/inventory'
+import { InventoryCheckItem, InventoryCheckScope } from '../../types/inventory'
 
 type CheckTab = 'checking' | 'difference' | 'history'
-type CheckStatus = 'pending' | 'done' | 'difference'
-type CheckScope = 'all' | 'low' | 'high' | 'location'
 
-interface CheckItem {
-  id: string
-  sku: string
-  name: string
-  location: string
-  systemQty: number
-  actualQty?: number
-  difference?: number
-  status: CheckStatus
-  note?: string
-  createdAt: number
-  updatedAt?: number
+interface CheckViewItem extends InventoryCheckItem {
+  statusLabel: string
 }
-
-interface CheckTask {
-  id: string
-  scope: CheckScope
-  note: string
-  status: 'ongoing' | 'done'
-  createdAt: number
-  completedAt?: number
-}
-
-const CHECK_ITEMS_KEY = 'yanjing-check-items'
-const CHECK_TASKS_KEY = 'yanjing-check-tasks'
 
 const tabOptions: Array<{ key: CheckTab; label: string }> = [
   { key: 'checking', label: '盘点中' },
@@ -36,12 +20,32 @@ const tabOptions: Array<{ key: CheckTab; label: string }> = [
   { key: 'history', label: '历史记录' },
 ]
 
-const scopeOptions: Array<{ label: string; value: CheckScope }> = [
+const scopeOptions: Array<{ label: string; value: InventoryCheckScope }> = [
   { label: '全部商品', value: 'all' },
   { label: '仅库存不足', value: 'low' },
   { label: '仅库存超限', value: 'high' },
   { label: '按库位盘点', value: 'location' },
 ]
+
+function toStatusLabel(status: InventoryCheckItem['status']): string {
+  if (status === 'difference') {
+    return '存在差异'
+  }
+  if (status === 'done') {
+    return '已完成'
+  }
+  return '待盘点'
+}
+
+function toRemoteStatus(tab: CheckTab): InventoryCheckItem['status'] {
+  if (tab === 'difference') {
+    return 'difference'
+  }
+  if (tab === 'history') {
+    return 'done'
+  }
+  return 'pending'
+}
 
 Component({
   data: {
@@ -55,7 +59,7 @@ Component({
     scopeOptions,
     scopeIndex: 0,
     taskNote: '',
-    list: [] as CheckItem[],
+    list: [] as CheckViewItem[],
   },
   lifetimes: {
     attached() {
@@ -84,70 +88,26 @@ Component({
         return false
       }
     },
-    readCheckItems(): CheckItem[] {
-      const raw = wx.getStorageSync(CHECK_ITEMS_KEY)
-      return Array.isArray(raw) ? raw : []
-    },
-    saveCheckItems(items: CheckItem[]) {
-      wx.setStorageSync(CHECK_ITEMS_KEY, items)
-    },
-    readCheckTasks(): CheckTask[] {
-      const raw = wx.getStorageSync(CHECK_TASKS_KEY)
-      return Array.isArray(raw) ? raw : []
-    },
-    saveCheckTasks(tasks: CheckTask[]) {
-      wx.setStorageSync(CHECK_TASKS_KEY, tasks)
-    },
-    generateCheckItems(scope: CheckScope): CheckItem[] {
-      const stockList: Array<{ id: string; sku: string; name: string; location: string; qty: number }> = [
-        { id: 'INV-001', sku: 'LENS-001', name: '超薄镜片 1.67', location: 'A-01', qty: 18 },
-        { id: 'INV-002', sku: 'FRAME-010', name: '金属镜架 M10', location: 'B-03', qty: 96 },
-        { id: 'INV-003', sku: 'LENS-022', name: '防蓝光镜片 1.60', location: 'A-06', qty: 45 },
-        { id: 'INV-004', sku: 'LENS-005', name: '渐进镜片 1.60', location: 'A-02', qty: 12 },
-        { id: 'INV-005', sku: 'FRAME-001', name: '钛架镜框 T1', location: 'B-01', qty: 8 },
-      ]
-
-      return stockList
-        .filter((item) => {
-          if (scope === 'low') return item.qty < 20
-          if (scope === 'high') return item.qty > 80
-          return true
-        })
-        .map((item) => ({
-          id: `CHK-${Date.now()}-${item.id}`,
-          sku: item.sku,
-          name: item.name,
-          location: item.location,
-          systemQty: item.qty,
-          status: 'pending' as CheckStatus,
-          createdAt: Date.now(),
-        }))
-    },
-    filterItems(items: CheckItem[], tab: CheckTab, keyword: string): CheckItem[] {
-      let filtered = items
-      if (tab === 'checking') {
-        filtered = items.filter((i) => i.status === 'pending' || (i.status === 'done' && !i.difference))
-      } else if (tab === 'difference') {
-        filtered = items.filter((i) => i.status === 'difference' || (i.difference !== undefined && i.difference !== 0))
-      } else {
-        filtered = items.filter((i) => i.status === 'done')
-      }
-
-      if (keyword.trim()) {
-        filtered = filtered.filter((i) => i.name.includes(keyword) || i.sku.includes(keyword))
-      }
-
-      return filtered.sort((a, b) => b.createdAt - a.createdAt)
+    mapList(list: InventoryCheckItem[]): CheckViewItem[] {
+      return list.map((item) => ({
+        ...item,
+        statusLabel: toStatusLabel(item.status),
+      }))
     },
     async refreshData() {
       const allowed = await this.ensureAccess()
-      if (!allowed) return
+      if (!allowed) {
+        return
+      }
 
       this.setData({ loading: true })
       try {
-        const items = this.readCheckItems()
+        const items = await listInventoryCheckItems({
+          keyword: this.data.keyword,
+          status: toRemoteStatus(this.data.currentTab),
+        })
         this.setData({
-          list: this.filterItems(items, this.data.currentTab, this.data.keyword),
+          list: this.mapList(items),
         })
       } catch (error) {
         const message = error instanceof Error ? error.message : '加载失败'
@@ -164,7 +124,9 @@ Component({
     },
     onTabChange(e: WechatMiniprogram.TouchEvent) {
       const tab = e.currentTarget.dataset.tab as CheckTab
-      if (!tab || tab === this.data.currentTab) return
+      if (!tab || tab === this.data.currentTab) {
+        return
+      }
       this.setData({ currentTab: tab })
       this.refreshData()
     },
@@ -175,33 +137,19 @@ Component({
       this.setData({ taskNote: e.detail.value || '' })
     },
     async createTask() {
-      if (this.data.creating) return
+      if (this.data.creating) {
+        return
+      }
 
-      const scope = scopeOptions[this.data.scopeIndex].value
       this.setData({ creating: true })
-
       try {
-        const newItems = this.generateCheckItems(scope)
-        if (newItems.length === 0) {
-          wx.showToast({ title: '该范围无商品需要盘点', icon: 'none' })
-          return
-        }
-
-        const tasks = this.readCheckTasks()
-        const newTask: CheckTask = {
-          id: `TASK-${Date.now()}`,
-          scope,
-          note: this.data.taskNote,
-          status: 'ongoing',
-          createdAt: Date.now(),
-        }
-        tasks.unshift(newTask)
-        this.saveCheckTasks(tasks)
-
-        const existingItems = this.readCheckItems()
-        this.saveCheckItems([...newItems, ...existingItems])
-
-        this.setData({ taskNote: '' })
+        const auth = await ensureAuthReady()
+        await createInventoryCheckTask({
+          scope: scopeOptions[this.data.scopeIndex].value,
+          note: this.data.taskNote.trim(),
+          operator: auth.userName || '系统',
+        })
+        this.setData({ taskNote: '', currentTab: 'checking' })
         wx.showToast({ title: '盘点任务创建成功', icon: 'success' })
         this.refreshData()
       } catch (error) {
@@ -211,141 +159,129 @@ Component({
         this.setData({ creating: false })
       }
     },
-    completeTask(taskId: string) {
-      const tasks = this.readCheckTasks()
-      const updated = tasks.map((task) => {
-        if (task.id === taskId && task.status === 'ongoing') {
-          return { ...task, status: 'done' as const, completedAt: Date.now() }
-        }
-        return task
-      })
-      this.saveCheckTasks(updated)
-    },
     onActualQtyInput(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
       const id = e.currentTarget.dataset.id as string
-      const value = e.detail.value
-      const qty = value ? parseInt(value, 10) : undefined
-
-      const list = this.readCheckItems()
-      const updated = list.map((item) => {
-        if (item.id !== id) return item
-        return { ...item, actualQty: qty }
+      const value = String(e.detail.value || '').trim()
+      const actualQty = value === '' ? undefined : Number(value)
+      const list = this.data.list.map((item) => {
+        if (item.id !== id) {
+          return item
+        }
+        return {
+          ...item,
+          actualQty: actualQty == null || !Number.isFinite(actualQty) ? undefined : actualQty,
+        }
       })
-      this.saveCheckItems(updated)
-
-      const viewList = this.data.list.map((item: CheckItem) => {
-        if (item.id !== id) return item
-        return { ...item, actualQty: qty }
-      })
-      this.setData({ list: viewList })
+      this.setData({ list })
     },
-    submitCount(e: WechatMiniprogram.TouchEvent) {
+    async submitCount(e: WechatMiniprogram.TouchEvent) {
       const id = e.currentTarget.dataset.id as string
-      if (!id) return
-
-      const list = this.readCheckItems()
-      const item = list.find((i) => i.id === id)
-      if (!item || item.actualQty === undefined) {
+      const item = this.data.list.find((current) => current.id === id)
+      if (!item) {
+        return
+      }
+      if (item.actualQty == null || !Number.isFinite(item.actualQty) || item.actualQty < 0 || !Number.isInteger(item.actualQty)) {
         wx.showToast({ title: '请输入实盘数量', icon: 'none' })
         return
       }
 
-      const difference = item.actualQty - item.systemQty
-      const updated = list.map((i) => {
-        if (i.id !== id) return i
-        return {
-          ...i,
-          difference,
-          status: difference !== 0 ? ('difference' as CheckStatus) : ('done' as CheckStatus),
-          updatedAt: Date.now(),
-        }
-      })
-      this.saveCheckItems(updated)
-
-      wx.showToast({
-        title: difference !== 0 ? '盘点完成，存在差异' : '盘点完成',
-        icon: 'none',
-      })
-      this.refreshData()
+      try {
+        const updated = await submitInventoryCheckItem({
+          id,
+          actualQty: item.actualQty,
+        })
+        wx.showToast({
+          title: updated.status === 'difference' ? '盘点完成，存在差异' : '盘点完成',
+          icon: 'none',
+        })
+        this.refreshData()
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '提交失败'
+        wx.showToast({ title: message, icon: 'none' })
+      }
     },
-    adjustStock(e: WechatMiniprogram.TouchEvent) {
+    async adjustStock(e: WechatMiniprogram.TouchEvent) {
       const id = e.currentTarget.dataset.id as string
-      if (!id) return
+      if (!id) {
+        return
+      }
 
       wx.showModal({
         title: '确认调整库存',
         content: '是否按盘点结果调整系统库存？',
-        success: (res) => {
-          if (res.confirm) {
-            const list = this.readCheckItems()
-            const updated = list.map((item) => {
-              if (item.id !== id) return item
-              return { ...item, status: 'done' as CheckStatus, updatedAt: Date.now() }
+        success: async (res) => {
+          if (!res.confirm) {
+            return
+          }
+          try {
+            const auth = await ensureAuthReady()
+            await resolveInventoryCheckItem({
+              id,
+              action: 'adjust',
+              operator: auth.userName || '系统',
+              note: '盘点差异入账',
             })
-            this.saveCheckItems(updated)
             wx.showToast({ title: '库存已调整', icon: 'success' })
             this.refreshData()
+          } catch (error) {
+            const message = error instanceof Error ? error.message : '处理失败'
+            wx.showToast({ title: message, icon: 'none' })
           }
         },
       })
     },
-    markNormal(e: WechatMiniprogram.TouchEvent) {
+    async markNormal(e: WechatMiniprogram.TouchEvent) {
       const id = e.currentTarget.dataset.id as string
-      if (!id) return
-
-      const list = this.readCheckItems()
-      const updated = list.map((item) => {
-        if (item.id !== id) return item
-        return { ...item, status: 'done' as CheckStatus, updatedAt: Date.now() }
-      })
-      this.saveCheckItems(updated)
-      wx.showToast({ title: '已标记为正常', icon: 'success' })
-      this.refreshData()
-    },
-    submitAll() {
-      if (this.data.submittingAll) return
-
-      const pendingItems = this.data.list.filter((i: CheckItem) => i.status === 'pending')
-      if (pendingItems.length === 0) {
-        wx.showToast({ title: '没有待盘点项', icon: 'none' })
+      if (!id) {
         return
       }
 
-      const hasEmptyQty = pendingItems.some((i: CheckItem) => i.actualQty === undefined)
-      if (hasEmptyQty) {
+      try {
+        const auth = await ensureAuthReady()
+        await resolveInventoryCheckItem({
+          id,
+          action: 'mark_normal',
+          operator: auth.userName || '系统',
+          note: '盘点差异驳回',
+        })
+        wx.showToast({ title: '已标记为正常', icon: 'success' })
+        this.refreshData()
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '处理失败'
+        wx.showToast({ title: message, icon: 'none' })
+      }
+    },
+    async submitAll() {
+      if (this.data.submittingAll) {
+        return
+      }
+
+      const pendingItems = this.data.list.filter((item) => item.status === 'pending')
+      if (!pendingItems.length) {
+        wx.showToast({ title: '没有待盘点项', icon: 'none' })
+        return
+      }
+      if (pendingItems.some((item) => item.actualQty == null || !Number.isInteger(item.actualQty) || item.actualQty < 0)) {
         wx.showToast({ title: '请完成所有商品盘点', icon: 'none' })
         return
       }
 
       this.setData({ submittingAll: true })
-
-      const list = this.readCheckItems()
-      const updated = list.map((item) => {
-        const pending = pendingItems.find((p: CheckItem) => p.id === item.id)
-        if (!pending) return item
-        const difference = (item.actualQty || 0) - item.systemQty
-        return {
-          ...item,
-          difference,
-          status: difference !== 0 ? ('difference' as CheckStatus) : ('done' as CheckStatus),
-          updatedAt: Date.now(),
-        }
-      })
-      this.saveCheckItems(updated)
-
-      // 检查是否还有未完成的盘点项，如果没有则标记任务为完成
-      const remainingPending = updated.filter((i) => i.status === 'pending')
-      if (remainingPending.length === 0) {
-        const tasks = this.readCheckTasks()
-        const ongoingTask = tasks.find((t) => t.status === 'ongoing')
-        if (ongoingTask) {
-          this.completeTask(ongoingTask.id)
-        }
+      try {
+        await submitInventoryCheckItemsBatch(
+          pendingItems.map((item) => ({
+            id: item.id,
+            actualQty: item.actualQty as number,
+          }))
+        )
+        wx.showToast({ title: '全部盘点已提交', icon: 'success' })
+        this.refreshData()
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '提交失败'
+        wx.showToast({ title: message, icon: 'none' })
+      } finally {
+        this.setData({ submittingAll: false })
       }
-
-      wx.showToast({ title: '全部盘点已提交', icon: 'success' })
-      this.setData({ submittingAll: false })
-      this.refreshData()
     },
   },
 })

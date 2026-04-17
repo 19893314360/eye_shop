@@ -1,0 +1,90 @@
+<view class="page">
+  <block wx:if="{{step === 'select'}}">
+    <view class="card">
+      <view class="section-title">选择退货订单</view>
+      <view class="hint-text">仅展示已完成的订单</view>
+      <block wx:for="{{orders}}" wx:key="id">
+        <view
+          class="order-item {{selectedOrderId === item.id ? 'order-active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onOrderSelect"
+        >
+          <view class="order-top">
+            <view class="order-no">{{item.orderNo}}</view>
+            <view wx:if="{{selectedOrderId === item.id}}" class="check-mark">✓</view>
+          </view>
+          <view class="order-meta">{{item.memberName}} · {{item.itemName}}</view>
+          <view class="order-meta">￥{{item.amount}}</view>
+        </view>
+      </block>
+      <view wx:if="{{!orders.length}}" class="hint-text">暂无可退货订单</view>
+    </view>
+    <button class="primary-btn" bindtap="goFill">下一步</button>
+
+    <!-- 退货记录 -->
+    <view class="card" style="margin-top: 20rpx;">
+      <view class="section-title">退货记录</view>
+      <block wx:for="{{returnList}}" wx:key="id">
+        <view class="record-item">
+          <view class="record-top">
+            <view class="record-no">{{item.orderNo}}</view>
+            <view class="record-amount">-￥{{item.amount}}</view>
+          </view>
+          <view class="record-meta">{{item.memberName}} · {{item.itemName}}</view>
+          <view class="record-meta">原因：{{item.reason}} · 退款：{{item.refundChannel}}</view>
+        </view>
+      </block>
+      <view wx:if="{{!returnList.length}}" class="hint-text">暂无退货记录</view>
+    </view>
+  </block>
+
+  <block wx:if="{{step === 'fill'}}">
+    <view class="card">
+      <view class="section-title">退货信息</view>
+      <view class="info-row">
+        <view class="info-label">订单号</view>
+        <view class="info-value">{{selectedOrder.orderNo}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">会员</view>
+        <view class="info-value">{{selectedOrder.memberName}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">商品</view>
+        <view class="info-value">{{selectedOrder.itemName}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">退款金额</view>
+        <view class="info-value accent">￥{{selectedOrder.amount}}</view>
+      </view>
+    </view>
+    <view class="card">
+      <view class="section-title">退货详情</view>
+      <view class="field">
+        <view class="field-label">退货原因</view>
+        <picker mode="selector" range="{{reasonOptions}}" value="{{reasonIndex}}" bindchange="onReasonChange">
+          <view class="picker-value">{{reason || '请选择退货原因'}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <view class="field-label">退款方式</view>
+        <picker mode="selector" range="{{refundChannels}}" value="{{refundChannelIndex}}" bindchange="onRefundChannelChange">
+          <view class="picker-value">{{refundChannel || '请选择退款方式'}}</view>
+        </picker>
+      </view>
+    </view>
+    <view class="action-row">
+      <button class="secondary-btn" bindtap="goBack">返回</button>
+      <button class="primary-btn" loading="{{submitting}}" bindtap="submitReturn">确认退货</button>
+    </view>
+  </block>
+
+  <block wx:if="{{step === 'done'}}">
+    <view class="card done-card">
+      <view class="done-icon">✓</view>
+      <view class="done-title">退货提交成功</view>
+      <view class="done-hint">退款将按所选方式原路返回</view>
+    </view>
+    <button class="primary-btn" bindtap="goAgain">继续退货</button>
+  </block>
+</view>

@@ -34,7 +34,7 @@
     <view wx:if="{{loading}}" class="hint-text">加载中...</view>
     <view wx:if="{{!loading && !list.length}}" class="hint-text">暂无数据</view>
 
-    <block wx:for="{{list}}" wx:key="orderId">
+    <block wx:for="{{list}}" wx:key="itemKey">
       <view class="item">
         <view class="item-top">
           <view class="order-no">{{item.orderNo}}</view>
@@ -53,6 +53,8 @@
             wx:if="{{item.canFollowup}}"
             size="mini"
             class="primary-btn"
+            loading="{{actingOrderId === item.orderId}}"
+            disabled="{{actingOrderId === item.orderId}}"
             data-id="{{item.orderId}}"
             bindtap="markFollowupDone"
           >
@@ -62,6 +64,8 @@
             wx:if="{{item.canRecheck}}"
             size="mini"
             class="primary-btn"
+            loading="{{actingOrderId === item.orderId}}"
+            disabled="{{actingOrderId === item.orderId}}"
             data-id="{{item.orderId}}"
             bindtap="markRecheckDone"
           >

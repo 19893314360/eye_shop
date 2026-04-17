@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "backend:install": "npm.cmd install --prefix cloudrun",
+    "backend:db:init": "powershell -NoProfile -ExecutionPolicy Bypass -File cloudrun/scripts/init-db.ps1",
+    "backend:start": "node cloudrun/app.js",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch"
   },

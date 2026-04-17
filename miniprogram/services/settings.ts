@@ -15,6 +15,9 @@ export interface PrintConfig {
   printTicket: boolean
   printOrder: boolean
   printDelivery: boolean
+  ticketContent?: string
+  orderContent?: string
+  deliveryContent?: string
 }
 
 export interface RateConfig {

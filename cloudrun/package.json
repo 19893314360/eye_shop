@@ -4,9 +4,11 @@
   "private": true,
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "db:init": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/init-db.ps1"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mysql2": "^3.22.1"
   }
 }

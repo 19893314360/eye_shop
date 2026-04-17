@@ -130,9 +130,64 @@ Component({
     bindDevice() {
       wx.showModal({
         title: '绑定设备',
-        content: '请确保设备已开机并处于配对模式，然后扫描设备上的二维码进行绑定。（功能开发中）',
-        showCancel: false,
+        content: '请选择绑定方式',
+        confirmText: '扫码绑定',
+        cancelText: '手动输入',
+        success: (res) => {
+          if (res.confirm) {
+            // 模拟扫码绑定
+            wx.scanCode({
+              scanType: ['qrCode', 'barCode'],
+              success: () => {
+                this.addMockDevice('scanner')
+              },
+              fail: () => {
+                // 扫码失败，走手动输入
+                this.manualBind()
+              },
+            })
+          } else if (res.cancel) {
+            this.manualBind()
+          }
+        },
       })
+    },
+    manualBind() {
+      wx.showModal({
+        title: '手动绑定',
+        editable: true,
+        placeholderText: '请输入设备序列号',
+        success: (res) => {
+          if (res.confirm) {
+            const sn = String(res.content || '').trim()
+            if (!sn) {
+              wx.showToast({ title: '请输入序列号', icon: 'none' })
+              return
+            }
+            this.addMockDevice('printer', sn)
+          }
+        },
+      })
+    },
+    addMockDevice(type: 'printer' | 'cashbox' | 'scanner', sn?: string) {
+      const devices = this.data.devices
+      const now = new Date()
+      const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      const newDevice: Device = {
+        id: 'DEV-' + String(Date.now()).slice(-6),
+        name: type === 'printer' ? '新绑定打印机' : type === 'cashbox' ? '新绑定收款盒子' : '新绑定扫码枪',
+        type,
+        model: '待识别',
+        status: 'online',
+        storeName: '徐记总店',
+        lastActive: timeStr,
+        sn: sn || 'SN-' + String(Date.now()).slice(-8),
+      }
+      devices.unshift(newDevice)
+      wx.setStorageSync(STORAGE_KEY, devices)
+      this.setData({ devices })
+      this.applyFilter()
+      wx.showToast({ title: '设备绑定成功', icon: 'success' })
     },
   },
 })

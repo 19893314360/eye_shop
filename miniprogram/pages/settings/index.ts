@@ -254,6 +254,18 @@ Component({
       }
       this.onRateInput(e)
     },
+    onPrintContentInput(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
+      const path = e.currentTarget.dataset.path as string
+      if (!path) return
+      this.setData({ [path]: e.detail.value || '' })
+    },
+    previewPrint() {
+      wx.showModal({
+        title: '打印预览',
+        content: '打印预览功能将在连接打印机后可用。当前模板内容已保存，实际打印时将替换模板变量为真实数据。',
+        showCancel: false,
+      })
+    },
     persistRuntimeConfig(): RuntimeConfig {
       const runtimeConfig = saveRuntimeConfig(this.data.runtimeConfig)
       this.setData({ runtimeConfig })

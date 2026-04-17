@@ -11,8 +11,9 @@ const ROUTE_MAP: Record<string, string> = {
   '取件提醒': '/pages/delivery/index',
   '顾客取件': '/pages/delivery/index',
   '服务预约': '/pages/appointment/index',
-  '会员充值': '/pages/member-center/index?tab=balance',
+  '会员充值': '/pages/recharge/index',
   '积分兑换': '/pages/member-center/index?tab=points',
+  '积分兑换记录': '/pages/member-center/index?tab=points',
   '售后回访': '/pages/after-sale/index?tab=followup',
   '处理复查': '/pages/after-sale/index?tab=recheck',
   '售后追溯': '/pages/after-sale/index?tab=history',
@@ -65,6 +66,10 @@ const ROUTE_MAP: Record<string, string> = {
   '优惠券': '/pages/member-center/index?tab=coupons',
   '销售管理': '/pages/order-list/index',
   '统计报表': '/pages/stats/index',
+  '销售退货': '/pages/sales-return/index',
+  '销售换货': '/pages/sales-exchange/index',
+  '物品寄存': '/pages/consignment/index',
+  '费用报销': '/pages/expense-claim/index',
 }
 
 function normalizeName(name: string): string {

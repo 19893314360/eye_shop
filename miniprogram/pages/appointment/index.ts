@@ -1,20 +1,7 @@
+import { createAppointment, listAppointments, markAppointmentArrived } from '../../services/appointment'
 import { ensureAuthReady } from '../../services/auth-session'
+import { AppointmentItem, AppointmentService, AppointmentStatus } from '../../types/appointment'
 import { formatTime } from '../../utils/util'
-
-type AppointmentService = 'optometry' | 'recheck' | 'training'
-type AppointmentStatus = 'pending' | 'done'
-
-interface AppointmentItem {
-  id: string
-  customerName: string
-  mobile: string
-  serviceType: AppointmentService
-  date: string
-  time: string
-  note: string
-  status: AppointmentStatus
-  createdAt: number
-}
 
 interface AppointmentForm {
   customerName: string
@@ -24,8 +11,6 @@ interface AppointmentForm {
   time: string
   note: string
 }
-
-const APPOINTMENT_STORAGE_KEY = 'yanjing-appointments'
 
 const serviceOptions: Array<{ label: string; value: AppointmentService }> = [
   { label: '验光预约', value: 'optometry' },
@@ -66,36 +51,11 @@ function toStatusLabel(status: AppointmentStatus): string {
   return status === 'done' ? '已到店' : '待到店'
 }
 
-function parseAppointmentList(raw: unknown): AppointmentItem[] {
-  if (!Array.isArray(raw)) {
-    return []
-  }
-  return raw
-    .filter((item): item is Record<string, unknown> => Boolean(item && typeof item === 'object'))
-    .map((item) => {
-      const service = item.serviceType
-      const status = item.status
-      const safeService: AppointmentService =
-        service === 'recheck' || service === 'training' || service === 'optometry' ? service : 'optometry'
-      const safeStatus: AppointmentStatus = status === 'done' ? 'done' : 'pending'
-      return {
-        id: typeof item.id === 'string' ? item.id : `APT-${Date.now()}`,
-        customerName: typeof item.customerName === 'string' ? item.customerName : '',
-        mobile: typeof item.mobile === 'string' ? item.mobile : '',
-        serviceType: safeService,
-        date: typeof item.date === 'string' ? item.date : todayString(1),
-        time: typeof item.time === 'string' ? item.time : '10:30',
-        note: typeof item.note === 'string' ? item.note : '',
-        status: safeStatus,
-        createdAt: typeof item.createdAt === 'number' ? item.createdAt : Date.now(),
-      }
-    })
-}
-
 Component({
   data: {
     loading: false,
     saving: false,
+    arrivingId: '',
     role: 'sales' as UserRole,
     form: defaultForm(),
     serviceOptions,
@@ -133,12 +93,6 @@ Component({
         })
       }
     },
-    readList(): AppointmentItem[] {
-      return parseAppointmentList(wx.getStorageSync(APPOINTMENT_STORAGE_KEY))
-    },
-    saveList(list: AppointmentItem[]) {
-      wx.setStorageSync(APPOINTMENT_STORAGE_KEY, list)
-    },
     sortList(list: AppointmentItem[]): AppointmentItem[] {
       return [...list].sort((a, b) => b.createdAt - a.createdAt)
     },
@@ -146,7 +100,7 @@ Component({
       this.setData({ loading: true })
       try {
         const auth = await ensureAuthReady()
-        const list = this.sortList(this.readList())
+        const list = this.sortList(await listAppointments())
         this.setData({
           role: auth.role,
           list,
@@ -154,6 +108,7 @@ Component({
         if (auth.role === 'customer') {
           this.setData({
             'form.customerName': auth.userName || this.data.form.customerName,
+            'form.mobile': auth.mobile || this.data.form.mobile,
           })
         }
       } catch (error) {
@@ -204,28 +159,25 @@ Component({
 
       this.setData({ saving: true })
       try {
-        const list = this.readList()
-        const next: AppointmentItem = {
-          id: `APT-${Date.now()}`,
+        await createAppointment({
           customerName: payload.customerName.trim(),
           mobile: payload.mobile.trim(),
           serviceType: payload.serviceType,
           date: payload.date,
           time: payload.time,
           note: payload.note.trim(),
-          status: 'pending',
-          createdAt: Date.now(),
-        }
-        list.unshift(next)
-        this.saveList(list)
+        })
+        const preservedName = this.data.role === 'customer' ? payload.customerName.trim() : ''
+        const preservedMobile = this.data.role === 'customer' ? payload.mobile.trim() : ''
         this.setData({
           form: {
             ...defaultForm(),
-            customerName: this.data.role === 'customer' ? payload.customerName.trim() : '',
+            customerName: preservedName,
+            mobile: preservedMobile,
           },
           serviceIndex: 0,
-          list: this.sortList(list),
         })
+        await this.refreshList()
         wx.showToast({
           title: '预约提交成功',
           icon: 'success',
@@ -237,28 +189,25 @@ Component({
         this.setData({ saving: false })
       }
     },
-    markArrived(e: WechatMiniprogram.TouchEvent) {
+    async markArrived(e: WechatMiniprogram.TouchEvent) {
       const id = e.currentTarget.dataset.id as string
-      if (!id) {
+      if (!id || this.data.arrivingId) {
         return
       }
-      const list = this.readList().map((item) => {
-        if (item.id !== id) {
-          return item
-        }
-        return {
-          ...item,
-          status: 'done' as AppointmentStatus,
-        }
-      })
-      this.saveList(list)
-      this.setData({
-        list: this.sortList(list),
-      })
-      wx.showToast({
-        title: '已标记到店',
-        icon: 'success',
-      })
+      this.setData({ arrivingId: id })
+      try {
+        await markAppointmentArrived(id)
+        await this.refreshList()
+        wx.showToast({
+          title: '已标记到店',
+          icon: 'success',
+        })
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '标记到店失败'
+        wx.showToast({ title: message, icon: 'none' })
+      } finally {
+        this.setData({ arrivingId: '' })
+      }
     },
     serviceLabel(item: AppointmentItem): string {
       return toServiceLabel(item.serviceType)

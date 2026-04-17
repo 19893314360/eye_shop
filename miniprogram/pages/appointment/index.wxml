@@ -83,6 +83,8 @@
           wx:if="{{role !== 'customer' && item.status !== 'done'}}"
           size="mini"
           class="secondary-btn"
+          loading="{{arrivingId === item.id}}"
+          disabled="{{arrivingId === item.id}}"
           data-id="{{item.id}}"
           bindtap="markArrived"
         >

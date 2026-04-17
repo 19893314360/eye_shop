@@ -81,14 +81,27 @@
       <view>小票模板</view>
       <switch checked="{{settings.print.printTicket}}" data-path="settings.print.printTicket" bindchange="toggleBoolean" color="#f57c00"></switch>
     </view>
+    <view wx:if="{{settings.print.printTicket}}" class="field">
+      <view class="field-label">小票模板内容</view>
+      <textarea class="field-textarea" maxlength="500" value="{{settings.print.ticketContent}}" data-path="settings.print.ticketContent" bindinput="onPrintContentInput" placeholder="店铺名\n日期：{{date}}\n商品：{{itemName}}\n金额：￥{{amount}}\n感谢惠顾！" />
+    </view>
     <view class="switch-row">
       <view>配镜单模板</view>
       <switch checked="{{settings.print.printOrder}}" data-path="settings.print.printOrder" bindchange="toggleBoolean" color="#f57c00"></switch>
+    </view>
+    <view wx:if="{{settings.print.printOrder}}" class="field">
+      <view class="field-label">配镜单模板内容</view>
+      <textarea class="field-textarea" maxlength="500" value="{{settings.print.orderContent}}" data-path="settings.print.orderContent" bindinput="onPrintContentInput" placeholder="配镜单\n客户：{{customerName}}\n右眼：{{rightEye}}\n左眼：{{leftEye}}\nPD：{{pd}}" />
     </view>
     <view class="switch-row">
       <view>取件单模板</view>
       <switch checked="{{settings.print.printDelivery}}" data-path="settings.print.printDelivery" bindchange="toggleBoolean" color="#f57c00"></switch>
     </view>
+    <view wx:if="{{settings.print.printDelivery}}" class="field">
+      <view class="field-label">取件单模板内容</view>
+      <textarea class="field-textarea" maxlength="500" value="{{settings.print.deliveryContent}}" data-path="settings.print.deliveryContent" bindinput="onPrintContentInput" placeholder="取件通知\n客户：{{customerName}}\n订单号：{{orderNo}}\n商品：{{itemName}}\n请凭此单到店取件" />
+    </view>
+    <button class="secondary-btn" bindtap="previewPrint">预览打印效果</button>
   </view>
 
   <view wx:if="{{!loading && currentTab === 'rate'}}" class="card panel">

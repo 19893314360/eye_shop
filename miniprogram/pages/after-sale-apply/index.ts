@@ -1,6 +1,7 @@
+import { createAfterSaleApply } from '../../services/after-sale'
 import { ensureAuthReady } from '../../services/auth-session'
-
-type AfterSaleType = 'return' | 'exchange' | 'repair' | 'refund'
+import { listOrders } from '../../services/sales'
+import { AfterSaleType } from '../../types/after-sale'
 
 interface OrderOption {
   value: string
@@ -23,19 +24,10 @@ const reasonOptions = [
   '其他原因',
 ]
 
-const STORAGE_KEY = 'yanjing-after-sale-applies'
-
-function generateApplyNo(): string {
-  const now = new Date()
-  const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
-  return `AS${dateStr}${random}`
-}
-
 Component({
   data: {
     orderOptions: [] as OrderOption[],
-    orderIndex: 0,
+    orderIndex: -1,
     typeOptions,
     reasonOptions,
     afterSaleType: 'return' as AfterSaleType,
@@ -52,6 +44,23 @@ Component({
     },
   },
   methods: {
+    async loadOrders() {
+      try {
+        await ensureAuthReady()
+        const orders = await listOrders({ status: 'completed' })
+        const orderOptions = orders.map((order) => ({
+          value: order.id,
+          label: `${order.orderNo} ${order.itemName}  ¥${order.amount}`,
+        }))
+        this.setData({
+          orderOptions,
+          orderIndex: orderOptions.length > 0 ? 0 : -1,
+        })
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '加载订单失败'
+        wx.showToast({ title: message, icon: 'none' })
+      }
+    },
     async loadPhone() {
       try {
         const auth = await ensureAuthReady()
@@ -61,15 +70,6 @@ Component({
       } catch (error) {
         // ignore
       }
-    },
-    loadOrders() {
-      // Load mock orders
-      const orders: OrderOption[] = [
-        { value: 'ORD-20260415-001', label: 'ORD-20260415-001 超薄镜片+钛架  ¥688' },
-        { value: 'ORD-20260410-002', label: 'ORD-20260410-002 防蓝光镜片  ¥368' },
-        { value: 'ORD-20260405-003', label: 'ORD-20260405-003 渐进镜片套装  ¥1280' },
-      ]
-      this.setData({ orderOptions: orders })
     },
     onOrderChange(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
       this.setData({ orderIndex: Number(e.detail.value || 0) })
@@ -118,6 +118,10 @@ Component({
         wx.showToast({ title: '暂无可申请的订单', icon: 'none' })
         return
       }
+      if (!orderOptions[orderIndex]) {
+        wx.showToast({ title: '请选择订单', icon: 'none' })
+        return
+      }
 
       if (!reason) {
         wx.showToast({ title: '请选择申请原因', icon: 'none' })
@@ -132,23 +136,14 @@ Component({
       this.setData({ submitting: true })
 
       try {
-        const auth = await ensureAuthReady()
-        const apply = {
-          id: generateApplyNo(),
+        const apply = await createAfterSaleApply({
           orderId: orderOptions[orderIndex].value,
           type: afterSaleType,
           reason,
           remark,
           phone,
           images,
-          status: 'pending',
-          applicant: auth.userName || '客户',
-          createdAt: Date.now(),
-        }
-
-        const history: unknown[] = wx.getStorageSync(STORAGE_KEY) || []
-        history.unshift(apply)
-        wx.setStorageSync(STORAGE_KEY, history)
+        })
 
         wx.showModal({
           title: '提交成功',

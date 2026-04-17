@@ -31,7 +31,17 @@
     </view>
   </view>
 
-  <view class="card records-card">
+  <!-- 功能Tab -->
+  <view class="card">
+    <view class="tabs">
+      <view class="tab-item {{currentTab === 'optometry' ? 'tab-item--active' : ''}}" data-tab="optometry" bindtap="onTabChange">验光记录</view>
+      <view class="tab-item {{currentTab === 'biometric' ? 'tab-item--active' : ''}}" data-tab="biometric" bindtap="onTabChange">生物测量</view>
+      <view class="tab-item {{currentTab === 'screening' ? 'tab-item--active' : ''}}" data-tab="screening" bindtap="onTabChange">视力筛查</view>
+    </view>
+  </view>
+
+  <!-- 验光记录 -->
+  <view wx:if="{{currentTab === 'optometry'}}" class="card records-card">
     <view class="section-title">最近验光记录</view>
     <view wx:if="{{loading}}" class="hint-text">加载中...</view>
     <view wx:if="{{!loading && !records.length}}" class="hint-text">暂无验光记录</view>
@@ -45,6 +55,37 @@
         <view class="record-line">左眼 {{item.leftEye}}</view>
         <view class="record-line">PD {{item.pd}}</view>
         <view class="record-note">{{item.suggestion}}</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 生物测量 -->
+  <view wx:if="{{currentTab === 'biometric'}}" class="card">
+    <view class="section-title">生物测量数据</view>
+    <view class="hint-text">眼轴长度、角膜曲率等光学参数</view>
+    <view class="bio-row"><view class="bio-label">眼轴长度(OD)</view><view class="bio-value">{{biometric.axialLengthOD}} mm</view></view>
+    <view class="bio-row"><view class="bio-label">眼轴长度(OS)</view><view class="bio-value">{{biometric.axialLengthOS}} mm</view></view>
+    <view class="bio-row"><view class="bio-label">角膜曲率(OD)</view><view class="bio-value">{{biometric.keratometryOD}} D</view></view>
+    <view class="bio-row"><view class="bio-label">角膜曲率(OS)</view><view class="bio-value">{{biometric.keratometryOS}} D</view></view>
+    <view class="bio-row"><view class="bio-label">前房深度(OD)</view><view class="bio-value">{{biometric.anteriorChamberOD}} mm</view></view>
+    <view class="bio-row"><view class="bio-label">前房深度(OS)</view><view class="bio-value">{{biometric.anteriorChamberOS}} mm</view></view>
+    <view class="bio-row"><view class="bio-label">晶状体厚度(OD)</view><view class="bio-value">{{biometric.lensThicknessOD}} mm</view></view>
+    <view class="bio-row"><view class="bio-label">晶状体厚度(OS)</view><view class="bio-value">{{biometric.lensThicknessOS}} mm</view></view>
+    <view class="bio-row"><view class="bio-label">白到白距离(OD)</view><view class="bio-value">{{biometric.wtwOD}} mm</view></view>
+    <view class="bio-row"><view class="bio-label">白到白距离(OS)</view><view class="bio-value">{{biometric.wtwOS}} mm</view></view>
+  </view>
+
+  <!-- 视力筛查 -->
+  <view wx:if="{{currentTab === 'screening'}}" class="card">
+    <view class="section-title">视力筛查记录</view>
+    <block wx:for="{{screeningList}}" wx:key="id">
+      <view class="screening-item">
+        <view class="screening-top">
+          <view class="screening-date">{{item.date}}</view>
+          <view class="screening-result {{item.result === '正常' ? 'result-normal' : 'result-warning'}}">{{item.result}}</view>
+        </view>
+        <view class="screening-meta">右眼视力 {{item.visionOD}} · 左眼视力 {{item.visionOS}}</view>
+        <view wx:if="{{item.note}}" class="screening-note">{{item.note}}</view>
       </view>
     </block>
   </view>

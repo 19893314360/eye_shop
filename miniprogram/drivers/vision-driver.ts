@@ -1,3 +1,6 @@
+import { getRuntimeConfig } from '../services/runtime-config'
+import { http } from '../utils/request'
+import { buildRequestPayload } from './payload'
 import { readString } from './codec'
 import { VisionRecord } from '../types/vision'
 
@@ -49,6 +52,18 @@ function toVisionRecord(raw: unknown): VisionRecord {
   }
 }
 
+function toCreateVisionDTO(payload: VisionPayload): Record<string, unknown> {
+  return buildRequestPayload([
+    { snake: 'member_id', camel: 'memberId', value: payload.memberId },
+    { snake: 'exam_date', camel: 'examDate', value: payload.examDate },
+    { snake: 'right_eye', camel: 'rightEye', value: payload.rightEye },
+    { snake: 'left_eye', camel: 'leftEye', value: payload.leftEye },
+    { snake: 'pd', camel: 'pd', value: payload.pd },
+    { snake: 'suggestion', camel: 'suggestion', value: payload.suggestion },
+    { snake: 'doctor', camel: 'doctor', value: payload.doctor },
+  ])
+}
+
 function readRecords(): VisionRecord[] {
   const raw = wx.getStorageSync(VISION_STORAGE_KEY)
   if (!Array.isArray(raw)) {
@@ -63,6 +78,21 @@ function saveRecords(list: VisionRecord[]) {
 }
 
 export async function listVisionRecordsDriver(memberId: string): Promise<VisionRecord[]> {
+  const runtime = getRuntimeConfig()
+  if (!runtime.useMockApi) {
+    const raw = await http.get<unknown[]>('/vision-records', {
+      data: buildRequestPayload([
+        { snake: 'member_id', camel: 'memberId', value: memberId },
+      ]),
+    })
+    if (!Array.isArray(raw)) {
+      return []
+    }
+    return raw
+      .map((item) => toVisionRecord(item))
+      .sort((a, b) => (a.examDate < b.examDate ? 1 : -1))
+  }
+
   const list = readRecords()
   return list
     .filter((item) => item.memberId === memberId)
@@ -70,6 +100,12 @@ export async function listVisionRecordsDriver(memberId: string): Promise<VisionR
 }
 
 export async function createVisionRecordDriver(payload: VisionPayload): Promise<VisionRecord> {
+  const runtime = getRuntimeConfig()
+  if (!runtime.useMockApi) {
+    const raw = await http.post<unknown, Record<string, unknown>>('/vision-records', toCreateVisionDTO(payload))
+    return toVisionRecord(raw)
+  }
+
   const records = readRecords()
   const next: VisionRecord = {
     id: `VR-${Date.now()}`,

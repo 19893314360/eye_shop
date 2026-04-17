@@ -44,13 +44,44 @@
 2. 单次检查：`npm.cmd run typecheck`
 3. 持续监听：`npm.cmd run typecheck:watch`
 
+## 本地后端联调
+1. 首次拉起后端依赖时执行：`npm.cmd run backend:install`
+2. 初始化本地 MySQL 结构：`npm.cmd run backend:db:init`
+3. 默认数据库连接：
+   - `DB_HOST=127.0.0.1`
+   - `DB_PORT=3306`
+   - `DB_USER=root`
+   - `DB_PASSWORD=123456`
+   - `DB_NAME=yanjing_dev`
+4. 启动本地后端：`npm.cmd run backend:start`
+5. 打开微信开发者工具项目设置，勾选 `不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书`。
+6. 小程序里进入 `系统设置 -> 系统设置 Tab -> 联调配置`，关闭 `Mock`。
+7. `API Base URL` 填 `http://127.0.0.1:3000`。
+8. `请求字段风格` 建议先用 `双写兼容`。
+9. 先点击 `联调自检`，再点击 `主链路联调（写入）`。
+10. 需要重置本地数据时，可执行：
+
+```powershell
+Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:3000/__dev/reset'
+```
+
+11. 当前“跳过合法域名校验”只适用于微信开发者工具本地联调，真机和正式环境仍然需要配置合法域名。
+
 ## P0 基础层现状
 1. 已支持 `wx.login -> /auth/login -> /auth/profile` 认证流程。
 2. 当前默认启用 mock 接口：`miniprogram/config/env.ts` 中 `useMockApi: true`。
 3. 切换角色会触发重新登录并刷新全局权限上下文。
-4. 已完成两批驱动改造：`auth/member/order/vision/purchase/settings/finance` 已接入驱动层。
+4. 已完成两批驱动改造：`auth/member/order/appointment/vision/purchase/settings/after-sale/sales-return/sales-exchange/inventory/inventory-check/finance` 已接入驱动层。
 5. 已支持运行时联调配置：系统设置页可切换 `Mock/真实后端` 并配置 `API Base URL`。
 6. 已支持请求字段风格切换：`snake_case / camelCase / 双写兼容`。
+
+## 真实后端接入现状（2026-04-17）
+1. 当前已打通真实后端链路：`auth/member/order/appointment/vision/purchase/settings/after-sale/sales-return/sales-exchange/inventory/inventory-check`。
+2. 本地后端 `cloudrun/app.js` 已实现并验证可用的接口包括：`/health`、`/__dev/reset`、`/auth/login`、`/auth/profile`、`/members`、`/orders`、`/orders/:id/pay`、`/orders/:id/deliver`、`/appointments`、`/appointments/:id/arrive`、`/after-sale-applies`、`/after-sale-records`、`/after-sale-records/:orderId/followup`、`/after-sale-records/:orderId/recheck`、`/sales-returns`、`/sales-exchanges`、`/vision-records`、`/purchase-records`、`/inventory-items`、`/inventory-movements`、`/inventory-items/:id/adjust`、`/inventory-check-tasks`、`/inventory-check-items`、`/inventory-check-items/batch-submit`、`/inventory-check-items/:id/submit`、`/inventory-check-items/:id/resolve`、`/settings`、`/finance/summary`。
+3. 本地后端当前已切到 `MySQL 8`，默认使用 `127.0.0.1:3306 / yanjing_dev`。
+4. `finance-summary` 页面当前仍以前端按订单列表汇总，不直接请求 `/finance/summary`。
+5. `order-detail` 页面当前仍通过 `listOrders()` 后本地查找订单，不是独立详情接口。
+6. 当前仍主要停留在本地存储或静态 mock 的模块集中在：培训、首页/工作台/统计等，详细见下方文档。
 
 ## 当前策略（2026-04-15）
 1. 开发优先级：先完成小程序功能，不阻塞在正式域名采购与备案。
@@ -67,3 +98,4 @@
 
 ## 联调文档
 1. [接口联调清单（驱动层）](C:/tool/study/yanjing/接口联调清单（驱动层）.md)
+2. [后端接入现状](C:/tool/study/yanjing/后端接入现状.md)

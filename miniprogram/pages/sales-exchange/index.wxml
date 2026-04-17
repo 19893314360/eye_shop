@@ -1,0 +1,79 @@
+<view class="page">
+  <block wx:if="{{step === 'select'}}">
+    <view class="card">
+      <view class="section-title">选择换货订单</view>
+      <block wx:for="{{orders}}" wx:key="id">
+        <view
+          class="order-item {{selectedOrderId === item.id ? 'order-active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onOrderSelect"
+        >
+          <view class="order-top">
+            <view class="order-no">{{item.orderNo}}</view>
+            <view wx:if="{{selectedOrderId === item.id}}" class="check-mark">✓</view>
+          </view>
+          <view class="order-meta">{{item.memberName}} · {{item.itemName}} · ￥{{item.amount}}</view>
+        </view>
+      </block>
+      <view wx:if="{{!orders.length}}" class="hint-text">暂无可换货订单</view>
+    </view>
+    <button class="primary-btn" bindtap="goFill">下一步</button>
+
+    <view class="card" style="margin-top: 20rpx;">
+      <view class="section-title">换货记录</view>
+      <block wx:for="{{exchangeList}}" wx:key="id">
+        <view class="record-item">
+          <view class="record-top">
+            <view class="record-no">{{item.orderNo}}</view>
+            <view class="record-diff {{item.priceDiff > 0 ? 'diff-add' : (item.priceDiff < 0 ? 'diff-minus' : '')}}">
+              {{item.priceDiff > 0 ? '+' : ''}}￥{{item.priceDiff}}
+            </view>
+          </view>
+          <view class="record-meta">{{item.memberName}}</view>
+          <view class="record-meta">原：{{item.originalItem}} → 新：{{item.newItem}}</view>
+        </view>
+      </block>
+      <view wx:if="{{!exchangeList.length}}" class="hint-text">暂无换货记录</view>
+    </view>
+  </block>
+
+  <block wx:if="{{step === 'fill'}}">
+    <view class="card">
+      <view class="section-title">原订单信息</view>
+      <view class="info-row"><view class="info-label">订单号</view><view class="info-value">{{selectedOrder.orderNo}}</view></view>
+      <view class="info-row"><view class="info-label">会员</view><view class="info-value">{{selectedOrder.memberName}}</view></view>
+      <view class="info-row"><view class="info-label">原商品</view><view class="info-value">{{selectedOrder.itemName}}</view></view>
+      <view class="info-row"><view class="info-label">原金额</view><view class="info-value">￥{{selectedOrder.amount}}</view></view>
+    </view>
+    <view class="card">
+      <view class="section-title">换货信息</view>
+      <view class="field">
+        <view class="field-label">新商品名称 *</view>
+        <input class="field-input" placeholder="请输入新商品名称" value="{{newItemName}}" bindinput="onNewItemInput" />
+      </view>
+      <view class="field">
+        <view class="field-label">新商品价格（留空则同原价）</view>
+        <input class="field-input" type="digit" placeholder="请输入价格" value="{{newItemPrice}}" bindinput="onNewPriceInput" />
+      </view>
+      <view class="field">
+        <view class="field-label">换货原因</view>
+        <picker mode="selector" range="{{reasonOptions}}" value="{{reasonIndex}}" bindchange="onReasonChange">
+          <view class="picker-value">{{reason || '请选择换货原因'}}</view>
+        </picker>
+      </view>
+    </view>
+    <view class="action-row">
+      <button class="secondary-btn" bindtap="goBack">返回</button>
+      <button class="primary-btn" loading="{{submitting}}" bindtap="submitExchange">确认换货</button>
+    </view>
+  </block>
+
+  <block wx:if="{{step === 'done'}}">
+    <view class="card done-card">
+      <view class="done-icon">✓</view>
+      <view class="done-title">换货提交成功</view>
+      <view class="done-hint">请安排新商品出货</view>
+    </view>
+    <button class="primary-btn" bindtap="goAgain">继续换货</button>
+  </block>
+</view>

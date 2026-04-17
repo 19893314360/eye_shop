@@ -1,30 +1,15 @@
+import { listAfterSaleApplies, listAfterSaleRecords, markAfterSaleFollowup, markAfterSaleRecheck } from '../../services/after-sale'
 import { ensureAuthReady } from '../../services/auth-session'
 import { listOrders } from '../../services/sales'
+import { AfterSaleApply, AfterSaleRecord } from '../../types/after-sale'
 import { SalesOrder } from '../../types/sales'
 import { formatTime } from '../../utils/util'
 
 type AfterSaleTab = 'followup' | 'recheck' | 'history'
 
-interface AfterSaleRecord {
-  followed: boolean
-  rechecked: boolean
-  updatedAt: number
-}
-
-interface CustomerApply {
-  id: string
-  orderId: string
-  type: string
-  reason: string
-  remark: string
-  phone: string
-  images: string[]
-  status: string
-  applicant: string
-  createdAt: number
-}
-
 interface AfterSaleItem {
+  itemKey: string
+  sortAt: number
   orderId: string
   orderNo: string
   memberName: string
@@ -41,37 +26,16 @@ interface AfterSaleItem {
   isCustomerApply?: boolean
 }
 
-const RECORD_STORAGE_KEY = 'yanjing-after-sale-records'
-const APPLY_STORAGE_KEY = 'yanjing-after-sale-applies'
-
 const tabOptions: Array<{ key: AfterSaleTab; label: string }> = [
   { key: 'followup', label: '待回访' },
   { key: 'recheck', label: '待复查' },
   { key: 'history', label: '已处理' },
 ]
 
-function toRecordMap(raw: unknown): Record<string, AfterSaleRecord> {
-  if (!raw || typeof raw !== 'object') {
-    return {}
-  }
-  const result: Record<string, AfterSaleRecord> = {}
-  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
-    if (!value || typeof value !== 'object') {
-      continue
-    }
-    const recordObj = value as Record<string, unknown>
-    result[key] = {
-      followed: recordObj.followed === true,
-      rechecked: recordObj.rechecked === true,
-      updatedAt: typeof recordObj.updatedAt === 'number' ? recordObj.updatedAt : 0,
-    }
-  }
-  return result
-}
-
 Component({
   data: {
     loading: false,
+    actingOrderId: '',
     role: 'sales' as UserRole,
     tabOptions,
     currentTab: 'followup' as AfterSaleTab,
@@ -112,17 +76,13 @@ Component({
         orderIdFromRoute: orderId,
       })
     },
-    readRecordMap(): Record<string, AfterSaleRecord> {
-      const raw = wx.getStorageSync(RECORD_STORAGE_KEY)
-      return toRecordMap(raw)
-    },
-    saveRecordMap(map: Record<string, AfterSaleRecord>) {
-      wx.setStorageSync(RECORD_STORAGE_KEY, map)
-    },
-    readCustomerApplies(): CustomerApply[] {
-      const raw = wx.getStorageSync(APPLY_STORAGE_KEY)
-      if (!Array.isArray(raw)) return []
-      return raw as CustomerApply[]
+    toRecordMap(list: AfterSaleRecord[]): Record<string, AfterSaleRecord> {
+      return list.reduce<Record<string, AfterSaleRecord>>((result, item) => {
+        if (item.orderId) {
+          result[item.orderId] = item
+        }
+        return result
+      }, {})
     },
     async ensureAccess(): Promise<boolean> {
       try {
@@ -155,6 +115,9 @@ Component({
       role: UserRole
     ): AfterSaleItem[] {
       const normalizedKeyword = keyword.trim()
+      if (role === 'customer') {
+        return []
+      }
       const base = orders
         .filter((order) => order.status === 'completed')
         .map((order) => {
@@ -168,9 +131,6 @@ Component({
       const filteredByTab = base.filter(({ record, order }) => {
         if (orderIdFromRoute && order.id !== orderIdFromRoute) {
           return false
-        }
-        if (role === 'customer') {
-          return true
         }
         if (currentTab === 'followup') {
           return !record.followed
@@ -195,6 +155,8 @@ Component({
       return filteredByKeyword
         .sort((a, b) => b.order.createdAt - a.order.createdAt)
         .map(({ order, record }) => ({
+          itemKey: `order:${order.id}`,
+          sortAt: order.createdAt,
           orderId: order.id,
           orderNo: order.orderNo,
           memberName: order.memberName,
@@ -202,12 +164,12 @@ Component({
           amount: order.amount,
           createdText: formatTime(new Date(order.createdAt)),
           updatedText: record.updatedAt ? formatTime(new Date(record.updatedAt)) : '--',
-          canFollowup: role !== 'customer' && !record.followed,
-          canRecheck: role !== 'customer' && record.followed && !record.rechecked,
+          canFollowup: !record.followed,
+          canRecheck: record.followed && !record.rechecked,
         }))
     },
     mapCustomerAppliesToItems(
-      applies: CustomerApply[],
+      applies: AfterSaleApply[],
       recordMap: Record<string, AfterSaleRecord>,
       currentTab: AfterSaleTab,
       keyword: string,
@@ -254,6 +216,8 @@ Component({
           const record = recordMap[apply.orderId] || { followed: false, rechecked: false, updatedAt: 0 }
           const typeLabel = typeLabels[apply.type] || apply.type
           return {
+            itemKey: `apply:${apply.id}`,
+            sortAt: apply.createdAt,
             orderId: apply.orderId,
             orderNo: apply.id,
             memberName: apply.applicant,
@@ -278,12 +242,15 @@ Component({
       }
       this.setData({ loading: true })
       try {
-        const orders = await listOrders({
-          status: 'completed',
-          keyword: this.data.keyword.trim(),
-        })
-        const recordMap = this.readRecordMap()
-        const applies = this.readCustomerApplies()
+        const [orders, records, applies] = await Promise.all([
+          listOrders({
+            status: 'completed',
+            keyword: this.data.keyword.trim(),
+          }),
+          listAfterSaleRecords(),
+          listAfterSaleApplies(),
+        ])
+        const recordMap = this.toRecordMap(records)
 
         // Merge: order-based items + customer application items
         const orderItems = this.mapToAfterSaleItems(
@@ -303,7 +270,7 @@ Component({
         )
 
         // Combine and sort by creation time
-        const allItems = [...orderItems, ...applyItems]
+        const allItems = [...orderItems, ...applyItems].sort((a, b) => b.sortAt - a.sortAt)
         this.setData({ list: allItems })
       } catch (error) {
         const message = error instanceof Error ? error.message : '加载售后列表失败'
@@ -334,70 +301,45 @@ Component({
     onSearch() {
       this.refreshList()
     },
-    updateRecord(orderId: string, updater: (record: AfterSaleRecord) => AfterSaleRecord) {
-      const map = this.readRecordMap()
-      const next = updater(map[orderId] || { followed: false, rechecked: false, updatedAt: 0 })
-      map[orderId] = next
-      this.saveRecordMap(map)
-    },
-    markFollowupDone(e: WechatMiniprogram.TouchEvent) {
+    async markFollowupDone(e: WechatMiniprogram.TouchEvent) {
       const orderId = e.currentTarget.dataset.id as string
-      if (!orderId) {
+      if (!orderId || this.data.actingOrderId) {
         return
       }
-      this.updateRecord(orderId, (record) => ({
-        ...record,
-        followed: true,
-        updatedAt: Date.now(),
-      }))
-
-      // Also update customer application status
-      const applies = this.readCustomerApplies()
-      const updatedApplies = applies.map((apply) => {
-        if (apply.orderId === orderId && apply.status === 'pending') {
-          return { ...apply, status: 'followed_up' }
-        }
-        return apply
-      })
-      if (JSON.stringify(applies) !== JSON.stringify(updatedApplies)) {
-        wx.setStorageSync(APPLY_STORAGE_KEY, updatedApplies)
+      this.setData({ actingOrderId: orderId })
+      try {
+        await markAfterSaleFollowup(orderId)
+        wx.showToast({
+          title: '回访已登记',
+          icon: 'success',
+        })
+        await this.refreshList()
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '登记回访失败'
+        wx.showToast({ title: message, icon: 'none' })
+      } finally {
+        this.setData({ actingOrderId: '' })
       }
-
-      wx.showToast({
-        title: '回访已登记',
-        icon: 'success',
-      })
-      this.refreshList()
     },
-    markRecheckDone(e: WechatMiniprogram.TouchEvent) {
+    async markRecheckDone(e: WechatMiniprogram.TouchEvent) {
       const orderId = e.currentTarget.dataset.id as string
-      if (!orderId) {
+      if (!orderId || this.data.actingOrderId) {
         return
       }
-      this.updateRecord(orderId, (record) => ({
-        ...record,
-        followed: true,
-        rechecked: true,
-        updatedAt: Date.now(),
-      }))
-
-      // Also update customer application status
-      const applies = this.readCustomerApplies()
-      const updatedApplies = applies.map((apply) => {
-        if (apply.orderId === orderId && (apply.status === 'pending' || apply.status === 'followed_up')) {
-          return { ...apply, status: 'completed' }
-        }
-        return apply
-      })
-      if (JSON.stringify(applies) !== JSON.stringify(updatedApplies)) {
-        wx.setStorageSync(APPLY_STORAGE_KEY, updatedApplies)
+      this.setData({ actingOrderId: orderId })
+      try {
+        await markAfterSaleRecheck(orderId)
+        wx.showToast({
+          title: '复查已处理',
+          icon: 'success',
+        })
+        await this.refreshList()
+      } catch (error) {
+        const message = error instanceof Error ? error.message : '处理复查失败'
+        wx.showToast({ title: message, icon: 'none' })
+      } finally {
+        this.setData({ actingOrderId: '' })
       }
-
-      wx.showToast({
-        title: '复查已处理',
-        icon: 'success',
-      })
-      this.refreshList()
     },
     goOrderDetail(e: WechatMiniprogram.TouchEvent) {
       const orderId = e.currentTarget.dataset.id as string

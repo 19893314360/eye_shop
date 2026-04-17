@@ -1,0 +1,56 @@
+<view class="page">
+  <view class="card">
+    <view class="tabs">
+      <block wx:for="{{tabOptions}}" wx:key="key">
+        <view class="tab-item {{currentTab === item.key ? 'tab-item--active' : ''}}" data-tab="{{item.key}}" bindtap="onTabChange">
+          {{item.label}}
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 寄存列表 -->
+  <view wx:if="{{currentTab === 'list'}}" class="card">
+    <view class="section-title">寄存列表</view>
+    <view wx:if="{{!list.length}}" class="hint-text">暂无寄存记录</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="consignment-item">
+        <view class="item-top">
+          <view class="item-name">{{item.itemName}}</view>
+          <view class="item-status {{item.status === 'picked' ? 'status-done' : 'status-stored'}}">
+            {{item.status === 'picked' ? '已取回' : '寄存中'}}
+          </view>
+        </view>
+        <view class="item-meta">客户：{{item.customerName}}</view>
+        <view class="item-meta">寄存时间：{{item.storedText}}</view>
+        <view wx:if="{{item.pickedText}}" class="item-meta">取回时间：{{item.pickedText}}</view>
+        <view wx:if="{{item.note}}" class="item-meta">备注：{{item.note}}</view>
+        <button
+          wx:if="{{item.status === 'stored'}}"
+          size="mini"
+          class="secondary-btn"
+          data-id="{{item.id}}"
+          bindtap="pickUp"
+        >标记取回</button>
+      </view>
+    </block>
+  </view>
+
+  <!-- 新增寄存 -->
+  <view wx:if="{{currentTab === 'store'}}" class="card">
+    <view class="section-title">新增寄存</view>
+    <view class="field">
+      <view class="field-label">客户姓名 *</view>
+      <input class="field-input" placeholder="请输入客户姓名" value="{{form.customerName}}" data-field="customerName" bindinput="onFormInput" />
+    </view>
+    <view class="field">
+      <view class="field-label">物品名称 *</view>
+      <input class="field-input" placeholder="如：太阳镜、旧镜架" value="{{form.itemName}}" data-field="itemName" bindinput="onFormInput" />
+    </view>
+    <view class="field">
+      <view class="field-label">备注</view>
+      <textarea class="field-textarea" maxlength="60" placeholder="可选" value="{{form.note}}" data-field="note" bindinput="onFormInput" />
+    </view>
+    <button class="primary-btn" loading="{{submitting}}" bindtap="submitStore">确认寄存</button>
+  </view>
+</view>

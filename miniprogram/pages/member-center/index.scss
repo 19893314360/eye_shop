@@ -239,3 +239,104 @@
   font-size: 24rpx;
   color: #999999;
 }
+
+/* 充值按钮 */
+.recharge-btn {
+  margin-top: 24rpx;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 26rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+  border-radius: 999rpx;
+  padding: 0 40rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+}
+
+/* 积分兑换 */
+.exchange-section {
+  margin-top: 32rpx;
+  background: #fffbf5;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.exchange-hint {
+  font-size: 30rpx;
+  color: #f57c00;
+  font-weight: 600;
+}
+
+.exchange-toggle {
+  background: #fff3e0;
+  color: #f57c00;
+  font-size: 24rpx;
+  border: none;
+  border-radius: 999rpx;
+  padding: 0 24rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+}
+
+.exchange-list {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+}
+
+.exchange-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0e8d8;
+}
+
+.exchange-item:last-child {
+  border-bottom: none;
+}
+
+.exchange-info {
+  flex: 1;
+}
+
+.exchange-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.exchange-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.exchange-cost {
+  font-size: 24rpx;
+  color: #f57c00;
+  margin-top: 4rpx;
+}
+
+.exchange-btn {
+  background: #f57c00;
+  color: #fff;
+  border: none;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  padding: 0 28rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+}
+
+.exchange-btn-disabled {
+  background: #ccc;
+  color: #fff;
+}

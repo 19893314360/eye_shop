@@ -83,3 +83,23 @@
   background: #fff3e8;
   color: #f57c00;
 }
+
+// Tabs
+.tabs { display: flex; gap: 0; }
+.tab-item { flex: 1; text-align: center; padding: 20rpx 0; font-size: 28rpx; color: #666; border-bottom: 4rpx solid transparent; }
+.tab-item--active { color: #f57c00; font-weight: 600; border-bottom-color: #f57c00; }
+
+// 生物测量
+.bio-row { display: flex; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f5f5f5; }
+.bio-label { font-size: 28rpx; color: #666; }
+.bio-value { font-size: 28rpx; color: #333; font-weight: 600; }
+
+// 视力筛查
+.screening-item { padding: 20rpx 0; border-bottom: 1rpx solid #f5f5f5; }
+.screening-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
+.screening-date { font-size: 28rpx; color: #333; font-weight: 600; }
+.screening-result { font-size: 24rpx; padding: 4rpx 16rpx; border-radius: 999rpx; }
+.result-normal { background: #e8f5e9; color: #4caf50; }
+.result-warning { background: #fff3e0; color: #f57c00; }
+.screening-meta { font-size: 24rpx; color: #666; }
+.screening-note { font-size: 24rpx; color: #f57c00; margin-top: 4rpx; }
